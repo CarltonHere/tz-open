@@ -1,0 +1,9 @@
+{
+	"data": {
+		"version": "1.00"
+	},
+	"code": 200,
+	"timestamp": 0,
+	"message": "Success",
+	"path": "/corporates/version"
+}
