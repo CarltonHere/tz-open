@@ -1,16 +1,15 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Cache } from 'cache-manager';
 import { createHash } from 'crypto';
 import { MurLock } from 'murlock';
-import { User } from 'src/user/entities/user.entity';
 import { BalanceService } from 'src/balance/balance.service';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
-import { OpenQueue } from 'src/open/open.queue';
-import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/user/entities/user.entity';
 import { Between, In, Like, Repository } from 'typeorm';
 import { CreateOpenDto } from './dto/create-open.dto';
-import { Open } from './entities/open.entity';
 import { GetOpenDto } from './dto/get-auth.dto';
+import { Open } from './entities/open.entity';
 
 @Injectable()
 export class OpenService {
@@ -18,7 +17,6 @@ export class OpenService {
   constructor(
     private readonly balanceService: BalanceService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private readonly apiQueueService: OpenQueue,
     @InjectRepository(Open)
     private readonly openRepository: Repository<Open>,
   ) {}
@@ -29,8 +27,8 @@ export class OpenService {
 
   @MurLock(
     5000,
-    ['user.id'],
     (retries) => (Math.floor(Math.random() * 50) + 50) * retries,
+    'user.id',
   )
   async payCharge(amount: number, user: User) {
     const res = await this.balanceService.chargeAmount(amount, user);
@@ -40,16 +38,16 @@ export class OpenService {
     const hash = createHash('sha256');
     hash.update(JSON.stringify(config));
     const hashValue = hash.digest('hex');
-    let res = await this.cacheManager.get(hashValue);
+    const res = await this.cacheManager.get(hashValue);
     this.logger.verbose(`symbol: ${symbol}`, config);
     if (res) {
       this.logger.log('重复请求，切换至缓存');
       return res;
     }
-    res = await this.apiQueueService.addJob(symbol, {
-      symbol,
-      config,
-    });
+    // res = await this.apiQueueService.addJob(symbol, {
+    //   symbol,
+    //   config,
+    // });
     this.cacheManager.set(hashValue, res, 60 * 60 * 1000);
     return res;
   }

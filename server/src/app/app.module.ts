@@ -1,29 +1,29 @@
 import { Logger, Module, ValidationPipe } from '@nestjs/common';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ApiModule } from '../api/api.module';
+import { AuthModule } from '../auth/auth.module';
+import { BalanceModule } from '../balance/balance.module';
+import { TransformInterceptor } from '../transform/transform.interceptor';
+import { UserModule } from '../user/user.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from '../auth/auth.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from '../user/user.module';
-import { ApiModule } from '../api/api.module';
-import { BalanceModule } from '../balance/balance.module';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
-import { TransformInterceptor } from '../transform/transform.interceptor';
 // import { BullModule } from '@nestjs/bullmq';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheModule, CacheStore } from '@nestjs/cache-manager';
-import { MurLockModule } from 'murlock';
-import { redisInsStore } from 'cache-manager-redis-yet';
-import { RedisClientType, createClient } from 'redis';
-import { Config } from 'cache-manager';
-import { OpenModule } from '../open/open.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { Config } from 'cache-manager';
+import { redisInsStore } from 'cache-manager-redis-yet';
+import { MurLockModule } from 'murlock';
 import { join } from 'path';
-import { RoleModule } from '../role/role.module';
-import { PermissionModule } from '../permission/permission.module';
+import { RedisClientType, createClient } from 'redis';
 import { ApiKeyModule } from '../api-key/api-key.module';
-import { PermissionGuard } from '../permission/permission.guard';
 import { AuthGuard } from '../auth/auth.guard';
 import { PrimaryExceptionFilter } from '../exception/exception.filter';
+import { OpenModule } from '../open/open.module';
+import { PermissionGuard } from '../permission/permission.guard';
+import { PermissionModule } from '../permission/permission.module';
+import { RoleModule } from '../role/role.module';
 
 @Module({
   imports: [
@@ -77,7 +77,7 @@ import { PrimaryExceptionFilter } from '../exception/exception.filter';
       },
       inject: [ConfigService],
     }),
-    MurLockModule.registerAsync({
+    MurLockModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         redisOptions: {
