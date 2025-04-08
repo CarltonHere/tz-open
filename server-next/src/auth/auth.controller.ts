@@ -12,7 +12,6 @@ import {
   Patch,
   Post,
   Req,
-  SetMetadata,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
@@ -96,7 +95,6 @@ export class AuthController {
   }
 
   @Post('sso')
-  @SetMetadata('isPublic', true)
   async loginBySso(
     @Body() { username, password }: CreateAuthDto,
     @Req() request: Request,

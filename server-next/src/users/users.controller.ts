@@ -8,12 +8,14 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetUsersDto } from './dto/get-users.dto';
 import { UpdateUsersDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { GetUser } from './user.decorator';
+import { GetPrimaryMetaData, PrimaryMetaData } from './user.decorator';
 import { UsersService } from './users.service';
 
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -43,13 +45,19 @@ export class UsersController {
   }
 
   @Get('current')
-  findCurrent(@GetUser() user: User) {
-    console.log(user);
-    return this.findOne(user.id as string);
+  findCurrent(@GetPrimaryMetaData() primaryMetaData: PrimaryMetaData) {
+    console.log(primaryMetaData);
+    return this.findOne(primaryMetaData.user.id as string);
   }
 
   @Patch('current')
-  updateCurrent(@GetUser() user: User, @Body() updateUsersDto: UpdateUsersDto) {
-    return this.usersService.update(user.id as string, updateUsersDto);
+  updateCurrent(
+    @GetPrimaryMetaData() primaryMetaData: PrimaryMetaData,
+    @Body() updateUsersDto: UpdateUsersDto,
+  ) {
+    return this.usersService.update(
+      primaryMetaData.user.id as string,
+      updateUsersDto,
+    );
   }
 }

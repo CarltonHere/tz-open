@@ -1,12 +1,16 @@
+import { CacheModule } from '@nestjs/cache-manager';
 import { Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ApiKeysModule } from './api-keys/api-keys.module';
+import { ApisModule } from './apis/apis.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthModule } from './auth/auth.module';
 import { TransformInterceptor } from './commons/transform.interceptor';
+import { OpenModule } from './open/open.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { RolesModule } from './roles/roles.module';
 import { UsersModule } from './users/users.module';
@@ -17,6 +21,9 @@ import { UsersModule } from './users/users.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.dev', '.env'],
+    }),
+    CacheModule.register({
+      isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -38,6 +45,9 @@ import { UsersModule } from './users/users.module';
     RolesModule,
     PermissionsModule,
     AuthModule,
+    ApisModule,
+    OpenModule,
+    ApiKeysModule,
   ],
   controllers: [AppController],
   providers: [

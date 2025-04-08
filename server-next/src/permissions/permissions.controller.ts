@@ -8,10 +8,11 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetPermissionDto } from './dto/get-permission.dto';
 import { Permission } from './entities/permission.entity';
 import { PermissionsService } from './permissions.service';
-
+@ApiBearerAuth()
 @Controller('permissions')
 export class PermissionsController {
   constructor(private readonly permissionsService: PermissionsService) {}
