@@ -71,7 +71,7 @@ export class User extends EnhancedBaseEntity {
   @Column({
     type: 'varchar',
     length: 255,
-    nullable: false,
+    nullable: true,
   })
   email: string;
 

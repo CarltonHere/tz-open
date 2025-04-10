@@ -6,6 +6,7 @@ import {
 } from 'src/commons/query.utils';
 import { Role } from 'src/roles/entities/role.entity';
 import { FindOneOptions, Repository } from 'typeorm';
+import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersDto } from './dto/get-users.dto';
 import { UpdateUsersDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -48,8 +49,8 @@ export class UsersService {
       },
     );
   }
-  create(user: User) {
-    return this.userRepository.save(user);
+  create(createUserDto: CreateUserDto) {
+    return this.userRepository.save(createUserDto);
   }
   findAll(getUsersDto: GetUsersDto) {
     return entityFindAllByPaging(this.userRepository, {

@@ -11,6 +11,7 @@ import {
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetPrimaryMetaData, PrimaryMetaData } from 'src/users/user.decorator';
 import { ApiKeysService } from './api-keys.service';
+import { CreateApiKeyDto } from './dto/create-api-keys.dto';
 import { GetApiKeysDto } from './dto/get-api-keys.dto';
 import { ApiKey } from './entities/api-key.entity';
 
@@ -21,11 +22,11 @@ export class ApiKeysController {
 
   @Post()
   create(
-    @Body() apiKey: ApiKey,
+    @Body() createApiKeyDto: CreateApiKeyDto,
     @GetPrimaryMetaData() primaryMetaData: PrimaryMetaData,
   ) {
     return this.apiKeysService.create({
-      ...apiKey,
+      ...createApiKeyDto,
       user: primaryMetaData.user,
     });
   }

@@ -1,4 +1,4 @@
-import { Allow } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { EnhancedBaseEntity } from 'src/commons/entities/base.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
@@ -10,7 +10,14 @@ export enum APIKEY_STATUS {
 
 @Entity()
 export class ApiKey extends EnhancedBaseEntity {
-  @Allow()
+  @IsNotEmpty({ message: '名称不能为空' })
+  @IsString({ message: '名称格式错误' })
+  @Column({
+    type: 'varchar',
+    length: 255,
+  })
+  name: string;
+
   @ManyToOne(() => User)
   user?: User;
 

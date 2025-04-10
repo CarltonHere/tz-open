@@ -9,9 +9,9 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersDto } from './dto/get-users.dto';
 import { UpdateUsersDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
 import { GetPrimaryMetaData, PrimaryMetaData } from './user.decorator';
 import { UsersService } from './users.service';
 
@@ -20,8 +20,8 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Post()
-  create(@Body() user: User) {
-    return this.usersService.create(user);
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto);
   }
 
   @Get()

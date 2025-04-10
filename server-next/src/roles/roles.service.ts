@@ -30,7 +30,7 @@ export class RolesService {
             description: '系统创建默认角色',
             permissions: [
               {
-                path: '/auth',
+                path: '/auth/login',
                 method: 'POST',
                 type: '1',
               },

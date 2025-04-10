@@ -5,6 +5,7 @@ import {
   entityFindAllByPaging,
 } from 'src/commons/query.utils';
 import { FindOneOptions, Repository } from 'typeorm';
+import { CreateApiKeyDto } from './dto/create-api-keys.dto';
 import { GetApiKeysDto } from './dto/get-api-keys.dto';
 import { ApiKey } from './entities/api-key.entity';
 
@@ -14,8 +15,8 @@ export class ApiKeysService {
     @InjectRepository(ApiKey)
     private readonly apiKeysRepository: Repository<ApiKey>,
   ) {}
-  create(apiKey: ApiKey) {
-    return this.apiKeysRepository.save(apiKey);
+  create(createApiKeyDto: CreateApiKeyDto) {
+    return this.apiKeysRepository.save(createApiKeyDto);
   }
 
   findAll(getApisDto: GetApiKeysDto) {
