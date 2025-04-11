@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { FastifyReply } from 'fastify';
+
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import {
@@ -9,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { CommonApiResponse } from '../commons/dto/api.response';
+import { CommonApiResponse, RawApiResponse } from '../commons/dto/api.response';
 
 @Injectable()
 export class TransformInterceptor<T>
@@ -21,14 +22,19 @@ export class TransformInterceptor<T>
   ): Observable<CommonApiResponse<T>> {
     return next.handle().pipe(
       map((body) => {
-        const res = context.switchToHttp().getResponse();
+        const response: FastifyReply = context.switchToHttp().getResponse();
         if (body instanceof CommonApiResponse) {
           if (!body.path) {
-            body.path = res.req.url;
+            body.path = response.request.url;
           }
           return body;
+        } else if (body instanceof RawApiResponse) {
+          return body.payload;
         }
-        return body;
+        return new CommonApiResponse<T>({
+          data: body,
+          path: response.request.url,
+        });
       }),
     );
   }

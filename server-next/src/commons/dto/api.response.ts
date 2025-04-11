@@ -61,3 +61,10 @@ export class CommonApiResponse<T> {
           : true;
   }
 }
+
+export class RawApiResponse<T> {
+  payload: T;
+  constructor(payload: T) {
+    this.payload = payload;
+  }
+}

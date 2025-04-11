@@ -8,6 +8,7 @@ import {
   ObjectLiteral,
   Repository,
 } from 'typeorm';
+import { CommonApiResponse } from './dto/api.response';
 import { QueryDto } from './dto/query.dto';
 
 export type CriteriaOrWhereOptions<T> = string | FindOptionsWhere<T>;
@@ -46,5 +47,5 @@ export async function entityFindAllByPaging<Entity extends ObjectLiteral = any>(
     take: Math.min(pageSize, 100),
     skip: (current - 1) * Math.min(pageSize, 100),
   } as FindManyOptions<Entity>);
-  return { data, current, pageSize, total };
+  return new CommonApiResponse({ data, current, pageSize, total });
 }

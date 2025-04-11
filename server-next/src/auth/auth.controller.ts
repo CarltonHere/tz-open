@@ -31,32 +31,7 @@ export class AuthController {
   ) {}
 
   @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
-  }
-
-  @Post('login')
-  async login(
+  async create(
     @Body() { username, password }: CreateAuthDto,
     @Req() request: Request,
   ) {
@@ -86,12 +61,30 @@ export class AuthController {
     // });
     this.logger.log({ ...user, ip });
     return {
-      data: {
-        access_token: this.jwtService.sign({
-          id: user.id,
-        }),
-      },
+      access_token: this.jwtService.sign({
+        id: user.id,
+      }),
     };
+  }
+
+  @Get()
+  findAll() {
+    return this.authService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.authService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
+    return this.authService.update(+id, updateAuthDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.authService.remove(+id);
   }
 
   @Post('sso')
@@ -152,14 +145,12 @@ export class AuthController {
           // });
         }
         return {
-          data: {
-            username,
-            // email: user_info['upn'],
-            // nickname: user_info['unique_name'],
-            access_token: this.jwtService.sign({
-              id: user.id,
-            }),
-          },
+          username,
+          // email: user_info['upn'],
+          // nickname: user_info['unique_name'],
+          access_token: this.jwtService.sign({
+            id: user.id,
+          }),
         };
       } else {
         // this.authService.createAuthLog({
