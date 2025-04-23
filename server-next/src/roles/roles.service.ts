@@ -6,6 +6,7 @@ import {
 } from 'src/commons/query.utils';
 import { Permission } from 'src/permissions/entities/permission.entity';
 import { FindOneOptions, Repository } from 'typeorm';
+import { CreateRoleDto } from './dto/create-role.dto';
 import { GetRoleDto } from './dto/get-role.dto';
 import { Role } from './entities/role.entity';
 
@@ -43,7 +44,7 @@ export class RolesService {
       },
     );
   }
-  create(role: Role) {
+  create(role: CreateRoleDto) {
     const permissions = (role.permissions as Permission[]).map((item) => {
       const permission = new Permission();
       permission.path = item.path;
@@ -65,6 +66,7 @@ export class RolesService {
     findOneOptions?: FindOneOptions<Role>,
   ) {
     return this.roleRepository.findOne({
+      relations: ['permissions'],
       ...findOneOptions,
       where:
         typeof criteriaOrWhereOptions === 'string'

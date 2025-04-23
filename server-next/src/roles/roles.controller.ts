@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { CreateRoleDto } from './dto/create-role.dto';
 import { GetRoleDto } from './dto/get-role.dto';
 import { Role } from './entities/role.entity';
 import { RolesService } from './roles.service';
@@ -18,7 +19,7 @@ import { RolesService } from './roles.service';
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
   @Post()
-  create(@Body() role: Role) {
+  create(@Body() role: CreateRoleDto) {
     return this.rolesService.create(role);
   }
 

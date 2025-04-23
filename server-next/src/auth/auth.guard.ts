@@ -181,7 +181,7 @@ export class AuthGuard implements CanActivate {
 
     if (!permission && user?.username !== 'admin') {
       this.logger.verbose(
-        `用户 ${user?.id ?? user?.username} 没有 ${request.method} 接口 ${
+        `用户 ${user?.id ?? user?.username ?? 'Guest'} 没有 ${request.method} 接口 ${
           request?.routeOptions.url
         } 权限`,
       );

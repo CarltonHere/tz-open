@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { RolesService } from 'src/roles/roles.service';
 import { UsersService } from 'src/users/users.service';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
@@ -28,6 +29,7 @@ export class AuthController {
     private readonly jwtService: JwtService,
     private readonly httpService: HttpService,
     private readonly usersService: UsersService,
+    private readonly rolesService: RolesService,
   ) {}
 
   @Post()
@@ -120,11 +122,22 @@ export class AuthController {
           username,
         });
         if (!user) {
+          // 获取角色
+          const role = await this.rolesService.findOne({
+            name: '普通用户',
+          });
+          if (!role) {
+            throw new HttpException(
+              '系统角色不存在',
+              HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+          }
           user = await this.usersService.create({
             username,
             password,
             email: user_info['upn'],
             name: user_info['unique_name'],
+            role: role,
           });
           // this.authService.createAuthLog({
           //   type: 'register',

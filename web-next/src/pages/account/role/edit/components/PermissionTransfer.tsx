@@ -10,7 +10,14 @@ const useStyles = createStyles(() => {
         width: '100%',
       },
       "[class*='ant-transfer-list']": {
-        flex: 'auto',
+        // flex: 'auto',
+        "[class*='ant-table-content']": {
+          maxHeight: '50vh',
+          overflow: 'auto !important',
+        },
+      },
+      "[class*='ant-transfer-list-header']": {
+        flex: 'none',
       },
     },
   };

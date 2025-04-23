@@ -1,3 +1,4 @@
+import { Allow } from 'class-validator';
 import {
   BeforeInsert,
   CreateDateColumn,
@@ -40,15 +41,19 @@ function PrimaryUUIDv7(): PropertyDecorator {
 }
 
 export abstract class EnhancedBaseEntity {
+  @Allow()
   @PrimaryUUIDv7()
   id?: string;
 
+  @Allow()
   @CreateDateColumn({ type: 'timestamp' })
   create_time?: Date;
 
+  @Allow()
   @UpdateDateColumn({ type: 'timestamp' })
   update_time?: Date;
 
+  @Allow()
   @DeleteDateColumn({ type: 'timestamp' })
   delete_time?: Date;
 }
