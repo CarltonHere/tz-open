@@ -37,7 +37,10 @@ export class PermissionsService {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
           name: paths[path][method].operationId,
           method: method.toUpperCase(),
-          path: path.replaceAll('{', ':').replaceAll('}', ''),
+          path: path
+            .replaceAll('{path}', '*')
+            .replaceAll('{', ':')
+            .replaceAll('}', ''),
           id: services.length + 1,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
           group: paths[path][method].operationId.replace(/Controller_.*/, ''),

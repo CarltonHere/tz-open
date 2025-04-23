@@ -1,3 +1,4 @@
+import { Allow } from 'class-validator';
 import { EnhancedBaseEntity } from 'src/commons/entities/base.entity';
 import { Column, Entity } from 'typeorm';
 
@@ -8,6 +9,7 @@ export enum API_STATUS {
 
 @Entity()
 export class Api extends EnhancedBaseEntity {
+  @Allow()
   @Column({
     type: 'varchar',
     length: 255,
@@ -15,6 +17,7 @@ export class Api extends EnhancedBaseEntity {
   })
   name: string;
 
+  @Allow()
   @Column({
     type: 'varchar',
     length: 255,
@@ -23,6 +26,7 @@ export class Api extends EnhancedBaseEntity {
   })
   symbol: string;
 
+  @Allow()
   @Column({
     type: 'varchar',
     length: 255,
@@ -30,6 +34,7 @@ export class Api extends EnhancedBaseEntity {
   })
   base_url: string;
 
+  @Allow()
   @Column({
     type: 'varchar',
     length: 255,
@@ -38,6 +43,7 @@ export class Api extends EnhancedBaseEntity {
   })
   access_token: string;
 
+  @Allow()
   @Column({
     type: 'varchar',
     length: 255,
@@ -45,6 +51,7 @@ export class Api extends EnhancedBaseEntity {
   })
   concurrency: number;
 
+  @Allow()
   @Column({
     type: 'enum',
     enum: Object.values(API_STATUS),

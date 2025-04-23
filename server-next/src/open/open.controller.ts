@@ -96,7 +96,13 @@ export class OpenController {
       );
     }
 
-    import(`./handlers/${api.symbol}`)
+    let ApiHandlerClassName = `./handlers/${api.symbol}`;
+
+    if (api.symbol.startsWith('pai-')) {
+      ApiHandlerClassName = `./handlers/bailian`;
+    }
+
+    import(ApiHandlerClassName)
       .then(({ ApiHandler }: any) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
         const apiHandler = new ApiHandler({
