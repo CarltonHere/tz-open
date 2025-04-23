@@ -13,7 +13,9 @@ const logger = new Logger();
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(),
+    new FastifyAdapter({
+      bodyLimit: 10 * 1024 * 1024, // 10MB
+    }),
   );
   app.useGlobalFilters(new PrimaryExceptionFilter());
   const configService = app.get(ConfigService);
