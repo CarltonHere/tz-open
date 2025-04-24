@@ -38,16 +38,16 @@ const ApiList: React.FC = () => {
       },
     },
     {
+      title: '地址',
+      dataIndex: 'base_url',
+      valueType: 'text',
+    },
+    {
       title: '令牌',
       dataIndex: 'access_token',
       valueType: 'password',
       hideInSearch: true,
       hideInTable: true,
-    },
-    {
-      title: '端点',
-      dataIndex: 'base_url',
-      valueType: 'text',
     },
     {
       title: '并发限制',

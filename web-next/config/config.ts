@@ -149,6 +149,6 @@ export default defineConfig({
   },
   esbuildMinifyIIFE: true,
   requestRecord: {},
-  // base: '/admin/',
-  // publicPath: '/admin/',
+  base: '/admin/',
+  publicPath: '/admin/',
 });

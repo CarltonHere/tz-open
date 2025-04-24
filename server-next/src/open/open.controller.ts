@@ -18,6 +18,7 @@ import {
 import { ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { ApisService } from 'src/apis/apis.service';
+import { Api } from 'src/apis/entities/api.entity';
 import { CreateOpenDto } from './dto/create-open.dto';
 import { UpdateOpenDto } from './dto/update-open.dto';
 import { OpenService } from './open.service';
@@ -65,33 +66,72 @@ export class OpenController {
     // @GetUser() user: UserType,
   ) {
     console.log(clientRequest.params);
-    const api = await this.apisService.findOne(
-      {
-        symbol: (
-          clientRequest.params as {
-            apiName: string;
-          }
-        ).apiName,
-      },
-      {
-        select: ['id', 'name', 'symbol', 'base_url', 'access_token', 'status'],
-      },
-    );
+    const userSymbol = (
+      clientRequest.params as {
+        apiName: string;
+      }
+    ).apiName;
 
-    if (!api) {
-      throw new HttpException('接口不存在', HttpStatus.NOT_FOUND);
+    let api: Api | null;
+
+    // pai平台集中路由转发处理逻辑
+    if (userSymbol === 'pai') {
+      // 获取请求体中的ModelName
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const modelName: string | null = (clientRequest.body as any)?.model;
+      if (!modelName) {
+        throw new HttpException('未指定PAI平台模型名称', HttpStatus.NOT_FOUND);
+      }
+      console.log('modelName', modelName);
+      api = await this.apisService.findOne(
+        {
+          symbol: `pai-${modelName?.toLocaleLowerCase()}`,
+        },
+        {
+          select: [
+            'id',
+            'name',
+            'symbol',
+            'base_url',
+            'access_token',
+            'status',
+          ],
+        },
+      );
+      if (!api) {
+        throw new HttpException('PAI平台不存在该模型', HttpStatus.NOT_FOUND);
+      }
+    } else {
+      api = await this.apisService.findOne(
+        {
+          symbol: userSymbol,
+        },
+        {
+          select: [
+            'id',
+            'name',
+            'symbol',
+            'base_url',
+            'access_token',
+            'status',
+          ],
+        },
+      );
+      if (!api) {
+        throw new HttpException('接口不存在', HttpStatus.NOT_FOUND);
+      }
     }
 
     // 转换为真实请求路径
     let url: string;
     if (clientRequest.originalUrl.startsWith('/origin/')) {
       url = clientRequest.originalUrl.replace(
-        `/origin/${api.symbol}`,
+        `/origin/${userSymbol}`,
         api.base_url,
       );
     } else {
       url = clientRequest.originalUrl.replace(
-        `/open/${api.symbol}`,
+        `/open/${userSymbol}`,
         api.base_url,
       );
     }
