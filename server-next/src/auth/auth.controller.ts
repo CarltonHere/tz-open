@@ -193,10 +193,7 @@ export class AuthController {
         //   password,
         //   status: '4',
         // });
-        throw new HttpException(
-          '无法连接SSO认证服务器',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw exception;
       }
       if (exception.response?.status === 400) {
         // this.authService.createAuthLog({

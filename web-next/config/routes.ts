@@ -12,6 +12,18 @@
  */
 export default [
   {
+    name: 'apis',
+    path: '/apis',
+    routes: [
+      {
+        name: 'list',
+        path: '/apis/list',
+        access: 'commonRouteFilter',
+        component: './apis/list',
+      },
+    ],
+  },
+  {
     name: 'account',
     path: '/account',
     routes: [

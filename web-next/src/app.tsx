@@ -172,7 +172,7 @@ export const rootContainer: RuntimeConfig['rootContainer'] = (rootElement) => (
                   }),
                 ]).then((res) => {
                   return _.uniqBy(
-                    [...res[0].data.data, ...res[1].data.data].map((item: any) => {
+                    [...res[0].data, ...res[1].data].map((item: any) => {
                       return {
                         label: item.name,
                         value: item.id,

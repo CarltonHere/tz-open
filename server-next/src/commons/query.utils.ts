@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import {
   Between,
   FindManyOptions,
@@ -15,14 +14,18 @@ export type CriteriaOrWhereOptions<T> = string | FindOptionsWhere<T>;
 
 export async function entityFindAllByPaging<Entity extends ObjectLiteral = any>(
   repository: Repository<Entity>,
-  findManyOptions?: FindManyOptions<Entity> & {
-    filter?: FindOptionsWhere<Entity> | FindOptionsWhere<Entity>[];
-  } & QueryDto,
+  findManyOptions?: FindManyOptions<Entity> & QueryDto,
 ) {
-  const { current = 1, pageSize = 10, filter } = findManyOptions || {};
-  if (findManyOptions?.filter && filter) {
-    // eslint-disable-next-line @typescript-eslint/no-for-in-array
-    for (const k in findManyOptions.filter) {
+  const {
+    current = 1,
+    pageSize = 10,
+    select,
+    relations,
+    order,
+    ...filter
+  } = findManyOptions || {};
+  if (filter) {
+    for (const k in filter) {
       if (filter[k]) {
         if (Array.isArray(filter[k])) {
           if (String(k).includes('time')) {
@@ -42,7 +45,9 @@ export async function entityFindAllByPaging<Entity extends ObjectLiteral = any>(
   }
 
   const [data, total] = await repository.findAndCount({
-    ..._.omit(findManyOptions, 'filter'),
+    select,
+    relations,
+    order,
     where: filter,
     take: Math.min(pageSize, 100),
     skip: (current - 1) * Math.min(pageSize, 100),

@@ -1,44 +1,26 @@
 import RecordEditor from '@/components/RecordEditor';
-import { rolesControllerFindAll } from '@/services/swagger/roles';
 import {
-  usersControllerCreate,
-  usersControllerFindAll,
-  usersControllerRemove,
-  usersControllerUpdate,
-} from '@/services/swagger/users';
+  apisControllerCreate,
+  apisControllerFindAll,
+  apisControllerRemove,
+  apisControllerUpdate,
+} from '@/services/swagger/apis';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable, type ProColumns } from '@ant-design/pro-components';
 import { Button, message, Popconfirm } from 'antd';
 import React from 'react';
 
-const RoleList: React.FC = () => {
+const ApiList: React.FC = () => {
   const columns: ProColumns<Record<string, any>, 'searchSelect'>[] = [
     { title: 'ID', dataIndex: 'id', valueType: 'text', hideInForm: true },
     {
-      title: '姓名',
+      title: '名称',
       dataIndex: 'name',
       valueType: 'text',
     },
     {
-      title: '用户名',
-      dataIndex: 'username',
-      valueType: 'text',
-    },
-    {
-      title: '密码',
-      dataIndex: 'password',
-      valueType: 'password',
-      hideInTable: true,
-      hideInSearch: true,
-    },
-    {
-      title: '邮箱',
-      dataIndex: 'email',
-      valueType: 'text',
-    },
-    {
-      title: '头像',
-      dataIndex: 'avatar',
+      title: '标识',
+      dataIndex: 'symbol',
       valueType: 'text',
     },
     {
@@ -56,13 +38,21 @@ const RoleList: React.FC = () => {
       },
     },
     {
-      title: '角色',
-      dataIndex: ['role', 'id'],
-      valueType: 'searchSelect',
-      render: (_, entity) => entity?.role?.name,
-      fieldProps: {
-        searchRequest: rolesControllerFindAll,
-      },
+      title: '令牌',
+      dataIndex: 'access_token',
+      valueType: 'password',
+      hideInSearch: true,
+      hideInTable: true,
+    },
+    {
+      title: '端点',
+      dataIndex: 'base_url',
+      valueType: 'text',
+    },
+    {
+      title: '并发限制',
+      dataIndex: 'concurrency',
+      valueType: 'text',
     },
     {
       title: '创建时间',
@@ -112,15 +102,15 @@ const RoleList: React.FC = () => {
             key="edit"
             entity={{
               ...entity,
-              password: '不修改密码',
+              access_token: '不修改令牌',
             }}
             trigger={<Button type="default" icon={<EditOutlined />} />}
             columns={columns}
             onFinish={async (params: any) => {
-              if (params.password === '不修改密码') {
-                delete params.password;
+              if (params.access_token === '不修改令牌') {
+                delete params.access_token;
               }
-              return usersControllerUpdate({ id: entity.id }, params).then(() => {
+              return apisControllerUpdate({ id: entity.id }, params).then(() => {
                 message.success('修改成功');
                 action?.reload();
                 return true;
@@ -132,7 +122,7 @@ const RoleList: React.FC = () => {
             title="真的要删除这个项目么"
             description="该操作不可逆，请谨慎操作"
             onConfirm={() =>
-              usersControllerRemove({
+              apisControllerRemove({
                 id: entity.id,
               }).then(() => {
                 message.success('删除成功');
@@ -152,7 +142,7 @@ const RoleList: React.FC = () => {
         scroll={{ x: 'auto' }}
         rowKey={'id'}
         columns={columns}
-        request={(params) => usersControllerFindAll(params)}
+        request={(params) => apisControllerFindAll(params)}
         toolBarRender={(action) => [
           <RecordEditor
             key="create"
@@ -163,7 +153,7 @@ const RoleList: React.FC = () => {
             }
             columns={columns}
             onFinish={async (params: any) =>
-              usersControllerCreate(params).then(() => {
+              apisControllerCreate(params).then(() => {
                 message.success('添加成功');
                 action?.reload();
                 return true;
@@ -176,4 +166,4 @@ const RoleList: React.FC = () => {
   );
 };
 
-export default RoleList;
+export default ApiList;

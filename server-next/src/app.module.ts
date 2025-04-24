@@ -61,8 +61,6 @@ import { UsersModule } from './users/users.module';
       useFactory: () =>
         new ValidationPipe({
           transform: true,
-          whitelist: true,
-          forbidNonWhitelisted: true,
         }),
     },
     {
