@@ -40,14 +40,14 @@ export class AuthGuard implements CanActivate {
     const requestHeaderPayload = this.parseHeader(request);
     if (requestHeaderPayload?.token?.type === TokenType.BEARER) {
       const user = await this.verfiyBearerToken(requestHeaderPayload.token);
-      await this.verfiyPermission(request, user);
+      request['permission'] = await this.verfiyPermission(request, user);
       request['user'] = user;
     } else if (requestHeaderPayload?.token?.type === TokenType.APIKEY) {
       const user = await this.verfiyApikeyToken(requestHeaderPayload.token);
-      await this.verfiyPermission(request, user);
+      request['permission'] = await this.verfiyPermission(request, user);
       request['user'] = user;
     } else if (requestHeaderPayload?.token?.type === TokenType.GUEST) {
-      await this.verfiyPermission(request, null);
+      request['permission'] = await this.verfiyPermission(request, null);
       request['user'] = {
         id: 'guest',
         username: 'guest',
@@ -95,20 +95,20 @@ export class AuthGuard implements CanActivate {
       let apiKey: ApiKey | null;
       apiKey = await this.cacheManager.get(`apiKey-${token.value}`);
       // 尝试从数据库获取查找用户
-      if (!apiKey || !apiKey.user) {
+      if (!apiKey || !apiKey.owner) {
         apiKey = await this.apiKeysService.findOne(token.value, {
           relations: ['user'],
         });
       }
       // 最终判断
-      if (!apiKey || !apiKey.user) {
+      if (!apiKey || !apiKey.owner) {
         this.logger.error(`Error occurred: ${token.value} not found`);
         throw new UnauthorizedException();
       }
       // 每个apiKey缓存1分钟
       await this.cacheManager.set(`apiKey-${token.value}`, apiKey, 1000 * 60);
-      console.log(apiKey.user);
-      return apiKey.user;
+      console.log(apiKey.owner);
+      return apiKey.owner;
     } catch (exception) {
       this.logger.error(
         `Error occurred: ${(exception as Error).message}`,

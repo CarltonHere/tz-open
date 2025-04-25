@@ -21,6 +21,12 @@ export default [
         access: 'commonRouteFilter',
         component: './apis/list',
       },
+      {
+        name: 'api-keys',
+        path: '/apis/api-keys/list',
+        access: 'commonRouteFilter',
+        component: './api-keys/list',
+      },
     ],
   },
   {

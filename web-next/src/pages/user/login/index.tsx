@@ -108,8 +108,8 @@ const Login: React.FC = () => {
         <LoginFormPage
           backgroundImageUrl="/images/5.jpg"
           logo={'/logo.svg'}
-          title="内容管理系统"
-          subTitle={'一站式综合内容管理系统'}
+          title="天职国际开放平台"
+          subTitle={'资源一体化开放共享平台'}
           onFinish={async (values: API.CreateAuthDto & { rememberMe: boolean }) => {
             await handleSubmit(values);
           }}

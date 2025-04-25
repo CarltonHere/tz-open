@@ -15,7 +15,7 @@ const Settings: ProLayoutProps & {
   fixedHeader: false,
   fixSiderbar: true,
   colorWeak: false,
-  title: '丝丝里奥管理系统',
+  title: '天职国际开放平台',
   pwa: true,
   logo: '/logo.svg',
   iconfontUrl: '',

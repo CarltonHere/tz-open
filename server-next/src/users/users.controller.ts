@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { injectPrimaryMetaData } from 'src/permissions/permission.util';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersDto } from './dto/get-users.dto';
 import { UpdateUsersDto } from './dto/update-user.dto';
@@ -25,8 +26,13 @@ export class UsersController {
   }
 
   @Get()
-  findAll(@Query() query: GetUsersDto) {
-    return this.usersService.findAll(query);
+  findAll(
+    @Query() query: GetUsersDto,
+    @GetPrimaryMetaData() primaryMetaData: PrimaryMetaData,
+  ) {
+    return this.usersService.findAll(
+      injectPrimaryMetaData(query, primaryMetaData, 'id'),
+    );
   }
 
   @Get(':id')

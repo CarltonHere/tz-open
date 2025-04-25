@@ -10,7 +10,6 @@ export const GetPrimaryMetaData = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): PrimaryMetaData => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const request = ctx.switchToHttp().getRequest();
-    // console.log('request.permission', request.permission);
     return {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       type: request?.permission?.strategy ?? PERMISSION_STRATEGY.GLOBAL,

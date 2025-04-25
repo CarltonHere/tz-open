@@ -19,7 +19,7 @@ export class ApiKey extends EnhancedBaseEntity {
   name: string;
 
   @ManyToOne(() => User)
-  user?: User;
+  owner?: User;
 
   @Column({
     type: 'enum',

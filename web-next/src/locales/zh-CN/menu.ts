@@ -10,4 +10,5 @@ export default {
   'menu.account.role.edit': '编辑角色',
   'menu.apis': '接口管理',
   'menu.apis.list': '接口列表',
+  'menu.apis.api-keys': '接口令牌',
 };

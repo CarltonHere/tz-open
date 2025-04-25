@@ -21,6 +21,7 @@ export class ApiKeysService {
 
   findAll(getApisDto: GetApiKeysDto) {
     return entityFindAllByPaging(this.apiKeysRepository, {
+      relations: ['owner'],
       ...getApisDto,
     });
   }

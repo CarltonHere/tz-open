@@ -76,7 +76,7 @@ export default defineConfig({
    * @name layout 插件
    * @doc https://umijs.org/docs/max/layout-menu
    */
-  title: '丝丝里奥管理系统',
+  title: '天职国际开放平台',
   layout: {
     locale: true,
     ...defaultSettings,
