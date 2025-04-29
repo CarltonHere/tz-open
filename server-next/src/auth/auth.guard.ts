@@ -97,7 +97,7 @@ export class AuthGuard implements CanActivate {
       // 尝试从数据库获取查找用户
       if (!apiKey || !apiKey.owner) {
         apiKey = await this.apiKeysService.findOne(token.value, {
-          relations: ['user'],
+          relations: ['owner'],
         });
       }
       // 最终判断
