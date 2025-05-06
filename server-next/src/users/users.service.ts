@@ -50,7 +50,7 @@ export class UsersService {
     );
   }
   create(createUserDto: CreateUserDto) {
-    return this.userRepository.save(createUserDto);
+    return this.userRepository.save(this.userRepository.create(createUserDto));
   }
   findAll(getUsersDto: GetUsersDto) {
     return entityFindAllByPaging(this.userRepository, {

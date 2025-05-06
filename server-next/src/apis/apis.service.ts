@@ -18,7 +18,7 @@ export class ApisService {
   ) {}
 
   create(createApiDto: CreateApiDto) {
-    return this.apiRepository.save(createApiDto);
+    return this.apiRepository.save(this.apiRepository.create(createApiDto));
   }
   findAll(getApisDto: GetApisDto) {
     return entityFindAllByPaging(this.apiRepository, {

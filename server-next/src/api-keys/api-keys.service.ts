@@ -16,7 +16,9 @@ export class ApiKeysService {
     private readonly apiKeysRepository: Repository<ApiKey>,
   ) {}
   create(createApiKeyDto: CreateApiKeyDto) {
-    return this.apiKeysRepository.save(createApiKeyDto);
+    return this.apiKeysRepository.save(
+      this.apiKeysRepository.create(createApiKeyDto),
+    );
   }
 
   findAll(getApisDto: GetApiKeysDto) {

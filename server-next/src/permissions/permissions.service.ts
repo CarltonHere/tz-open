@@ -17,7 +17,9 @@ export class PermissionsService {
     private readonly swaggerService: SwaggerService,
   ) {}
   create(permission: Permission) {
-    return this.permissionRepository.save(permission);
+    return this.permissionRepository.save(
+      this.permissionRepository.create(permission),
+    );
   }
 
   findAllServices() {

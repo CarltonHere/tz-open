@@ -54,7 +54,7 @@ export class RolesService {
     });
     role.permissions = permissions;
     // 此处使用了级联自动保存(需要在Role实体OneToMany添加属性{ cascade: true })
-    return this.roleRepository.save(role);
+    return this.roleRepository.save(this.roleRepository.create(role));
   }
 
   findAll(getRoleDto: GetRoleDto) {
