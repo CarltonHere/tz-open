@@ -16,6 +16,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { RolesService } from 'src/roles/roles.service';
+import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
@@ -132,13 +133,13 @@ export class AuthController {
               HttpStatus.INTERNAL_SERVER_ERROR,
             );
           }
-          user = await this.usersService.create({
-            username,
-            password,
-            email: user_info['upn'],
-            name: user_info['unique_name'],
-            role: role,
-          });
+          const _user = new User()
+          _user.username = username;
+          _user.password = password;
+          _user.email = user_info['upn'];
+          _user.name = user_info['unique_name'];
+          _user.role = role;
+          user = await this.usersService.create(_user);
           // this.authService.createAuthLog({
           //   type: 'register',
           //   method: 'sso',
