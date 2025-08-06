@@ -92,10 +92,14 @@ export const errorConfig: RequestConfig = {
     (config: RequestOptions) => {
       const token = localStorage.getItem('Authentication');
       // 拦截请求配置，进行个性化处理。
-      config.headers = {
-        ...config.headers,
-        Authorization: token ? `Bearer ${token}` : '',
-      };
+      // 如果是登录接口，则不需要添加 Authorization 头
+      if (!config.url?.includes('/auth')) {
+        config.headers = {
+          ...config.headers,
+          Authorization: token ? `Bearer ${token}` : '',
+        };
+      }
+
       // 返回处理好的 config
       return config;
     },
