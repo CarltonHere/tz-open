@@ -38,11 +38,10 @@ const RecordEditor: React.FC<{
       //   columns.filter((column) => !column.hideInForm).length > 3 ? 'DrawerForm' : 'ModalForm'
       // }
       // shouldUpdate={true}
-      id="111"
       layoutType="ModalForm"
       modalProps={{
-        destroyOnClose: true,
-        // forceRender: true,
+        // destroyOnClose: true,
+        forceRender: true,
       }}
       rowProps={{
         gutter: [8, 8],
