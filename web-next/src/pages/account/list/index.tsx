@@ -40,6 +40,10 @@ const RoleList: React.FC = () => {
       title: '头像',
       dataIndex: 'avatar',
       valueType: 'text',
+      // 可选参数
+      formItemProps: {
+        rules: [{ required: false }],
+      },
     },
     {
       title: '状态',

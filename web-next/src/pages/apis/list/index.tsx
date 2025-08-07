@@ -46,6 +46,10 @@ const ApiList: React.FC = () => {
       title: '令牌',
       dataIndex: 'access_token',
       valueType: 'password',
+      // 可选参数
+      formItemProps: {
+        rules: [{ required: false }],
+      },
       hideInSearch: true,
       hideInTable: true,
     },
@@ -53,6 +57,10 @@ const ApiList: React.FC = () => {
       title: '并发限制',
       dataIndex: 'concurrency',
       valueType: 'text',
+      // 可选参数
+      formItemProps: {
+        initialValue: '-1',
+      },
     },
     {
       title: '创建时间',
