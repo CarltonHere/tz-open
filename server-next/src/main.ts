@@ -14,7 +14,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({
-      bodyLimit: 10 * 1024 * 1024, // 10MB
+      bodyLimit: 100 * 1024 * 1024, // 100MB
+      ignoreTrailingSlash: true,
     }),
   );
   app.useGlobalFilters(new PrimaryExceptionFilter());
