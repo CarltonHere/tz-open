@@ -1,8 +1,8 @@
 import { HttpService } from '@nestjs/axios';
+import * as crypto from 'crypto';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { CommonApiResponse, ErrorShowType } from 'src/commons/dto/api.response';
 import { Api } from '../../apis/entities/api.entity';
-
 export class ApiHandler {
   private readonly httpService: HttpService;
   private readonly clientRequest: FastifyRequest;
@@ -45,10 +45,10 @@ export class ApiHandler {
       delete this.clientRequest.headers['remote-host'];
     }
 
-    // 注入api的token
-    if (this.api.access_token) {
-      this.clientRequest.headers['authorization'] = this.api.access_token;
-    }
+    this.clientRequest.headers = {
+      ...this.clientRequest.headers,
+      ...this.generateBidataHeader(),
+    };
 
     this.httpService.axiosRef
       .request({
@@ -66,6 +66,12 @@ export class ApiHandler {
           this.clientResponse.raw.statusCode = response.status;
           // 设置响应头
           for (const [key, value] of Object.entries(response.headers)) {
+            // 仅允许白名单header设置
+            if (
+              !['content-type', 'set-cookie'].includes(key.toLocaleLowerCase())
+            ) {
+              continue;
+            }
             if (Array.isArray(value)) {
               this.clientResponse.raw.setHeader(key, value.join(', '));
             } else {
@@ -99,25 +105,44 @@ export class ApiHandler {
         });
       })
       .catch((exception: Error) => {
-        console.error('Error occurred:', exception.message);
-        this.clientResponse.raw.end(
-          'data: ' +
-            JSON.stringify(
-              new CommonApiResponse({
-                data: [],
-                path: this.clientRequest.url,
-                success: false,
-                errorCode: this.clientResponse.raw.statusCode,
-                errorMessage: '请求失败',
-                showType: ErrorShowType.ERROR_MESSAGE,
-              }),
-            ) +
-            '\n\n',
+        console.error('Error occurred11:', exception.message);
+        this.clientResponse.raw.write(
+          JSON.stringify(
+            new CommonApiResponse({
+              data: [],
+              path: this.clientRequest.url,
+              success: false,
+              errorCode: this.clientResponse.raw.statusCode,
+              errorMessage: '请求失败',
+              showType: ErrorShowType.ERROR_MESSAGE,
+            }),
+          ),
         );
       })
       .finally(() => {
         console.log('finally');
         this.clientResponse.raw.end();
       });
+  }
+
+  generateBidataHeader() {
+    // 定义参数
+    const xNonce = crypto.randomBytes(4).readUInt16BE(0).toString();
+    const securityKey =
+      'LdTZe0s0MGSXudVLJQhP03C1jl1F18sC6VLV7KTQdeJ4W8G1JhPcflRt7wEU8uuC'; // 替换为实际的 SecurityKey
+    const xTimestamp = new Date().getTime().toString();
+    const xUid = '5LZQQCUB';
+
+    // 拼接字符串
+    const data = `${xNonce};${securityKey};${xTimestamp};${xUid};`;
+    // 计算 SHA1 签名
+    const sha1Signature = crypto.createHash('sha1').update(data).digest('hex');
+    console.log('SHA1 签名:', sha1Signature);
+    return {
+      'X-Nonce': xNonce,
+      'X-Timestamp': xTimestamp,
+      'X-Uid': xUid,
+      'X-Signature': sha1Signature,
+    };
   }
 }

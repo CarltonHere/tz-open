@@ -30,25 +30,24 @@ export class ApiHandler {
   }
   request() {
     // 移除原有header
-    const clientHeaders = this.clientRequest.headers;
-    delete clientHeaders.host;
-    delete clientHeaders['content-length'];
-    if (clientHeaders['authorization']) {
-      delete clientHeaders['authorization'];
+    delete this.clientRequest.headers.host;
+    delete this.clientRequest.headers['content-length'];
+    if (this.clientRequest.headers['authorization']) {
+      delete this.clientRequest.headers['authorization'];
     }
-    if (clientHeaders['x-real-ip']) {
-      delete clientHeaders['x-real-ip'];
+    if (this.clientRequest.headers['x-real-ip']) {
+      delete this.clientRequest.headers['x-real-ip'];
     }
-    if (clientHeaders['x-forwarded-for']) {
-      delete clientHeaders['x-forwarded-for'];
+    if (this.clientRequest.headers['x-forwarded-for']) {
+      delete this.clientRequest.headers['x-forwarded-for'];
     }
-    if (clientHeaders['remote-host']) {
-      delete clientHeaders['remote-host'];
+    if (this.clientRequest.headers['remote-host']) {
+      delete this.clientRequest.headers['remote-host'];
     }
 
     // 注入api的token
     if (this.api.access_token) {
-      clientHeaders['authorization'] = this.api.access_token;
+      this.clientRequest.headers['authorization'] = this.api.access_token;
     }
 
     this.httpService.axiosRef
