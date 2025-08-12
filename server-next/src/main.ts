@@ -25,7 +25,7 @@ async function bootstrap() {
   await app
     .listen(
       configService.getOrThrow<string | number>('SERVER_PORT', 3000),
-      '0.0.0.0',
+      '::',
     )
     .then((server) => {
       logger.log('Opened server on', server.address());

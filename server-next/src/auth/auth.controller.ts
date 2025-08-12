@@ -133,7 +133,7 @@ export class AuthController {
               HttpStatus.INTERNAL_SERVER_ERROR,
             );
           }
-          const _user = new User()
+          const _user = new User();
           _user.username = username;
           _user.password = password;
           _user.email = user_info['upn'];

@@ -14,6 +14,7 @@ import { OpenModule } from './open/open.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { RolesModule } from './roles/roles.module';
 import { UsersModule } from './users/users.module';
+import { CherryModule } from './cherry/cherry.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { UsersModule } from './users/users.module';
     ApisModule,
     OpenModule,
     ApiKeysModule,
+    CherryModule,
   ],
   controllers: [AppController],
   providers: [
