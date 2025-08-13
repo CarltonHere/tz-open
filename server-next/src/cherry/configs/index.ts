@@ -1,0 +1,192 @@
+export default function getConfigs(accessToken: string) {
+  const config = {
+    configId: 'b82f0262',
+    version: '1.4.2',
+    llm: {
+      // 默认模型配置
+      defaultModel: {
+        id: 'qwen-max-latest',
+        name: 'qwen-max-latest',
+        provider: 'bakertilly',
+        group: 'qwen-max',
+        owned_by: 'system',
+      },
+      topicNamingModel: {
+        id: 'qwen-turbo-latest',
+        name: 'qwen-turbo-latest',
+        provider: 'bakertilly',
+        group: 'qwen-turbo',
+        owned_by: 'system',
+      },
+      translateModel: {
+        id: 'qwen-max-latest',
+        name: 'qwen-max-latest',
+        provider: 'bakertilly',
+        group: 'qwen-max',
+        owned_by: 'system',
+      },
+      quickAssistantModel: {
+        id: 'qwen-max-latest',
+        name: 'qwen-max-latest',
+        provider: 'bakertilly',
+        group: 'qwen-max',
+        owned_by: 'system',
+      },
+      // 模型配置参数
+      providers: [
+        {
+          id: 'bakertilly',
+          name: '天职国际',
+          type: 'openai',
+          apiKey: accessToken,
+          apiHost: 'https://api.tzcpa.com/origin/bailian/compatible-mode/v1/',
+          models: [
+            {
+              id: 'qwen-turbo-latest',
+              name: 'qwen-turbo-latest',
+              provider: 'bakertilly',
+              group: 'qwen-turbo',
+              owned_by: 'system',
+            },
+            {
+              id: 'qwen-plus-latest',
+              name: 'qwen-plus-latest',
+              provider: 'bakertilly',
+              group: 'qwen-plus',
+              owned_by: 'system',
+            },
+            {
+              id: 'qwen-max-latest',
+              name: 'qwen-max-latest',
+              provider: 'bakertilly',
+              group: 'qwen-max',
+              owned_by: 'system',
+            },
+            {
+              id: 'qwen-vl-plus',
+              name: 'qwen-vl-plus',
+              provider: 'bakertilly',
+              group: 'qwen-vl',
+              owned_by: 'system',
+            },
+            {
+              id: 'qwen-coder-plus',
+              name: 'qwen-coder-plus',
+              provider: 'bakertilly',
+              group: 'qwen-coder',
+              owned_by: 'system',
+            },
+            {
+              id: 'gte-rerank-v2',
+              name: 'gte-rerank-v2',
+              provider: 'bakertilly',
+              group: 'gte-rerank',
+              owned_by: 'system',
+            },
+            {
+              id: 'multimodal-embedding-v1',
+              name: 'multimodal-embedding-v1',
+              provider: 'bakertilly',
+              group: 'multimodal-embedding',
+              owned_by: 'system',
+            },
+            {
+              id: 'text-embedding-v1',
+              name: 'text-embedding-v1',
+              provider: 'bakertilly',
+              group: 'text-embedding',
+              owned_by: 'system',
+            },
+            {
+              id: 'text-embedding-v2',
+              name: 'text-embedding-v2',
+              provider: 'bakertilly',
+              group: 'text-embedding',
+              owned_by: 'system',
+            },
+            {
+              id: 'text-embedding-v3',
+              name: 'text-embedding-v3',
+              provider: 'bakertilly',
+              group: 'text-embedding',
+              owned_by: 'system',
+            },
+            {
+              id: 'qwen3-235b-a22b',
+              name: 'qwen3-235b-a22b',
+              provider: 'bakertilly',
+              group: 'qwen3-moe',
+              owned_by: 'system',
+            },
+            {
+              id: 'qwen3-30b-a3b',
+              name: 'qwen3-30b-a3b',
+              provider: 'bakertilly',
+              group: 'qwen3-moe',
+              owned_by: 'system',
+            },
+            {
+              id: 'deepseek-r1',
+              name: 'deepseek-r1',
+              provider: 'bakertilly',
+              group: 'deepseek',
+              owned_by: 'system',
+            },
+            {
+              id: 'deepseek-v3',
+              name: 'deepseek-v3',
+              provider: 'bakertilly',
+              group: 'deepseek',
+              owned_by: 'system',
+            },
+          ],
+          isSystem: true,
+          enabled: true,
+        },
+      ],
+    },
+
+    minapps: {
+      enabled: [
+        {
+          id: 'tzws',
+          name: '天职问税',
+          url: 'https://ai.tzcpa.com/chat/KfnSQiL3mJvyinVY',
+          logo: 'https://open.tzcpa.com/com.tzcpa.cloud/static/icons/tzsw.png',
+          type: 'Default',
+        },
+        {
+          id: 'kjsy',
+          name: '会计视界',
+          url: 'https://ai.tzcpa.com/chat/KP01HuCKaPEqtz4V',
+          logo: 'https://open.tzcpa.com/com.tzcpa.cloud/static/icons/kjwd.png',
+          type: 'Default',
+        },
+        {
+          id: 'yqzt',
+          name: '舆情智探',
+          url: 'https://ai.tzcpa.com/chat/agJ0fsCSRy1iVdmn',
+          logo: 'https://open.tzcpa.com/com.tzcpa.cloud/static/icons/yqjk.png',
+          type: 'Default',
+        },
+        {
+          id: 'tzcs',
+          name: '天职财思',
+          url: 'https://ai.tzcpa.com/chat/d4OnWG66X4Fegakj',
+          logo: 'https://open.tzcpa.com/com.tzcpa.cloud/static/icons/bbfx.png',
+          type: 'Default',
+        },
+        {
+          id: 'bxfxal',
+          name: '保险风险案例',
+          url: 'https://ai.tzcpa.com/chat/aRbjGXLWRNCZaWf3',
+          logo: '/src/assets/images/logo.png',
+          type: 'Default',
+        },
+      ],
+      disabled: [],
+      pinned: [],
+    },
+  };
+  return config;
+}
