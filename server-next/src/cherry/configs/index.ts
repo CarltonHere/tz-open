@@ -187,6 +187,28 @@ export default function getConfigs(accessToken: string) {
       disabled: [],
       pinned: [],
     },
+    mcp: {
+      servers: [
+        {
+          id: 'QUIIQPzL1chQUZc8k50_1',
+          name: '@cherry/fetch',
+          type: 'inMemory',
+          isActive: true,
+          provider: 'CherryAI',
+        },
+        {
+          id: 'DssHg6RJB7jDI77kAKRYu',
+          name: '@cherry/filesystem',
+          type: 'inMemory',
+          args: ['/Users/username/Desktop', '/path/to/other/allowed/dir'],
+          shouldConfig: true,
+          isActive: false,
+          provider: 'CherryAI',
+        },
+      ],
+      // isUvInstalled: true,
+      // isBunInstalled: true,
+    },
   };
   return config;
 }
