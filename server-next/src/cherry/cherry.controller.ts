@@ -31,7 +31,10 @@ export class CherryController {
     const _token = clientRequest.headers.authorization;
     const token = _token?.split(' ')[1];
     const _config = getConfigs(token as string);
-    return _config;
+    return {
+      ..._config,
+      configId: `${_config['configId']}${new Date().getHours()}`,
+    };
   }
 
   @Get(':id')
@@ -44,6 +47,9 @@ export class CherryController {
     const token = _token?.split(' ')[1];
     const _config = getConfigs(token as string);
     if (_config?.[id]) {
+      if (id === 'configId') {
+        return `${_config['configId']}${new Date().getHours()}`;
+      }
       return _config?.[id as keyof typeof _config];
     }
     return {};

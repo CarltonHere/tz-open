@@ -16,7 +16,7 @@ import { AuthService } from './auth.service';
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow('JSON_WEB_TOKEN_SECRET'),
         signOptions: {
-          expiresIn: configService.getOrThrow('JSON_WEB_TOKEN_EXPIRESIN'),
+          expiresIn: configService.getOrThrow('JSON_WEB_TOKEN_EXPIRES_IN'),
         },
       }),
       inject: [ConfigService],

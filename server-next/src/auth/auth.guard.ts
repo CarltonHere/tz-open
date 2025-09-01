@@ -3,6 +3,8 @@ import {
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Inject,
   Injectable,
   Logger,
@@ -86,6 +88,9 @@ export class AuthGuard implements CanActivate {
         `Error occurred: ${(exception as Error).message}`,
         (exception as Error).stack,
       );
+      if ((exception as Error)?.name === 'TokenExpiredError') {
+        throw new HttpException('JwtExpired', HttpStatus.UNAUTHORIZED);
+      }
       throw new UnauthorizedException();
     }
   }

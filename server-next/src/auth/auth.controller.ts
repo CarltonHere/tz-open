@@ -3,16 +3,13 @@ import { HttpService } from '@nestjs/axios';
 import {
   Body,
   Controller,
-  Delete,
-  Get,
   HttpException,
   HttpStatus,
   Logger,
-  Param,
-  Patch,
   Post,
   Req,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { RolesService } from 'src/roles/roles.service';
@@ -20,7 +17,7 @@ import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { RefreshAccessTokenDto } from './dto/refresh-access-token-dto';
 
 @Controller('auth')
 export class AuthController {
@@ -31,10 +28,11 @@ export class AuthController {
     private readonly httpService: HttpService,
     private readonly usersService: UsersService,
     private readonly rolesService: RolesService,
+    private configService: ConfigService,
   ) {}
 
   @Post()
-  async create(
+  async login(
     @Body() { username, password }: CreateAuthDto,
     @Req() request: Request,
   ) {
@@ -67,27 +65,20 @@ export class AuthController {
       access_token: this.jwtService.sign({
         id: user.id,
       }),
+      refresh_token: this.jwtService.sign(
+        {
+          id: user.id,
+        },
+        {
+          secret: this.configService.get<string>(
+            'JSON_WEB_TOKEN_REFRESH_SECRET',
+          ),
+          expiresIn: this.configService.get<string>(
+            'JSON_WEB_TOKEN_REFRESH_EXPIRES_IN',
+          ),
+        },
+      ),
     };
-  }
-
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
   }
 
   @Post('sso')
@@ -162,9 +153,29 @@ export class AuthController {
           username,
           // email: user_info['upn'],
           // nickname: user_info['unique_name'],
-          access_token: this.jwtService.sign({
-            id: user.id,
-          }),
+          access_token: this.jwtService.sign(
+            {
+              id: user.id,
+            },
+            {
+              expiresIn: this.configService.get<string>(
+                'JSON_WEB_TOKEN_EXPIRES_IN',
+              ),
+            },
+          ),
+          refresh_token: this.jwtService.sign(
+            {
+              id: user.id,
+            },
+            {
+              secret: this.configService.get<string>(
+                'JSON_WEB_TOKEN_REFRESH_SECRET',
+              ),
+              expiresIn: this.configService.get<string>(
+                'JSON_WEB_TOKEN_REFRESH_EXPIRES_IN',
+              ),
+            },
+          ),
         };
       } else {
         // this.authService.createAuthLog({
@@ -229,6 +240,41 @@ export class AuthController {
         exception.response.data as string,
         exception?.response?.status as number,
       );
+    }
+  }
+
+  @Post('refresh')
+  async refreshAccessToken(@Body() { refresh_token }: RefreshAccessTokenDto) {
+    try {
+      const user_jwt: {
+        id: string;
+        username: string;
+      } = await this.jwtService.verifyAsync(refresh_token, {
+        secret: this.configService.get<string>('JSON_WEB_TOKEN_REFRESH_SECRET'),
+      });
+
+      this.logger.verbose(user_jwt);
+      // 尝试从数据库获取查找用户
+      const user = await this.usersService.findOne(user_jwt.id);
+      // 最终判断
+      if (!user) {
+        this.logger.error(`Error occurred: User ${user_jwt.id} not found`);
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+      return {
+        access_token: this.jwtService.sign({
+          id: user.id,
+        }),
+      };
+    } catch (exception) {
+      this.logger.error(
+        `Error occurred: ${(exception as Error).message}`,
+        (exception as Error).stack,
+      );
+      if ((exception as Error)?.name === 'TokenExpiredError') {
+        throw new HttpException('JwtExpired', HttpStatus.FORBIDDEN);
+      }
+      throw new HttpException('JwtInvalid', HttpStatus.FORBIDDEN);
     }
   }
 }
