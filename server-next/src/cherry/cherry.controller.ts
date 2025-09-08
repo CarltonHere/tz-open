@@ -9,6 +9,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
+import { GetPrimaryMetaData, PrimaryMetaData } from 'src/users/user.decorator';
 import { CherryService } from './cherry.service';
 import getConfigs from './configs';
 import { CreateCherryDto } from './dto/create-cherry.dto';
@@ -26,6 +27,7 @@ export class CherryController {
   @Get()
   findAll(
     @Req() clientRequest: FastifyRequest & { _parsedUrl: { pathname: string } },
+    @GetPrimaryMetaData() primaryMetaData: PrimaryMetaData,
   ) {
     // 获取header里的token
     const _token = clientRequest.headers.authorization;
@@ -33,7 +35,7 @@ export class CherryController {
     const _config = getConfigs(token as string);
     return {
       ..._config,
-      configId: `${_config['configId']}${new Date().getHours()}`,
+      configId: `${_config['configId']}${new Date().getHours()}${primaryMetaData.jti || ''}`,
     };
   }
 
@@ -41,6 +43,7 @@ export class CherryController {
   findTargetConfig(
     @Param('id') id: string,
     @Req() clientRequest: FastifyRequest & { _parsedUrl: { pathname: string } },
+    @GetPrimaryMetaData() primaryMetaData: PrimaryMetaData,
   ) {
     // 获取header里的token
     const _token = clientRequest.headers.authorization;
@@ -48,7 +51,7 @@ export class CherryController {
     const _config = getConfigs(token as string);
     if (_config?.[id]) {
       if (id === 'configId') {
-        return `${_config['configId']}${new Date().getHours()}`;
+        return `${_config['configId']}${new Date().getHours()}${primaryMetaData.jti || ''}`;
       }
       return _config?.[id as keyof typeof _config];
     }

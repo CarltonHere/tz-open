@@ -41,11 +41,14 @@ export class AuthGuard implements CanActivate {
     const request: FastifyRequest = context.switchToHttp().getRequest();
     const requestHeaderPayload = this.parseHeader(request);
     if (requestHeaderPayload?.token?.type === TokenType.BEARER) {
-      const user = await this.verfiyBearerToken(requestHeaderPayload.token);
+      const { user, jti } = await this.verfiyBearerToken(
+        requestHeaderPayload.token,
+      );
       request['permission'] = await this.verfiyPermission(request, user);
       request['user'] = user;
+      request['jti'] = jti;
     } else if (requestHeaderPayload?.token?.type === TokenType.APIKEY) {
-      const user = await this.verfiyApikeyToken(requestHeaderPayload.token);
+      const { user } = await this.verfiyApikeyToken(requestHeaderPayload.token);
       request['permission'] = await this.verfiyPermission(request, user);
       request['user'] = user;
     } else if (requestHeaderPayload?.token?.type === TokenType.GUEST) {
@@ -63,7 +66,7 @@ export class AuthGuard implements CanActivate {
     try {
       const user_jwt: {
         id: string;
-        username: string;
+        jti: string | undefined;
       } = await this.jwtService.verifyAsync(token?.value, {
         secret: this.configService.get<string>('JSON_WEB_TOKEN_SECRET'),
       });
@@ -82,7 +85,10 @@ export class AuthGuard implements CanActivate {
       }
       await this.cacheManager.set(`user-${user_jwt.id}`, user, 1000 * 60);
       console.log(user);
-      return user;
+      return {
+        user,
+        jti: user_jwt.jti,
+      };
     } catch (exception) {
       this.logger.error(
         `Error occurred: ${(exception as Error).message}`,
@@ -113,7 +119,9 @@ export class AuthGuard implements CanActivate {
       // 每个apiKey缓存1分钟
       await this.cacheManager.set(`apiKey-${token.value}`, apiKey, 1000 * 60);
       console.log(apiKey.owner);
-      return apiKey.owner;
+      return {
+        user: apiKey.owner,
+      };
     } catch (exception) {
       this.logger.error(
         `Error occurred: ${(exception as Error).message}`,

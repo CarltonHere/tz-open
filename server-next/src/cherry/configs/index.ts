@@ -1,7 +1,11 @@
 export default function getConfigs(accessToken: string) {
   const config = {
-    configId: 'b82f0267',
-    version: '1.5.6',
+    configId: 'b82f0666',
+    update: {
+      latestVersion: '1.5.6',
+      lowestVersion: '1.5.6',
+      storeUrl: 'http://appstore.tzcpa.com/appDetail?appId=67',
+    },
     llm: {
       // 默认模型配置
       defaultModel: {
@@ -63,10 +67,17 @@ export default function getConfigs(accessToken: string) {
               owned_by: 'system',
             },
             {
-              id: 'qwen-vl-plus',
-              name: 'qwen-vl-plus(看图说话)',
+              id: 'qwen3-max-preview',
+              name: 'qwen3-max-preview(下一代旗舰模型预览版)',
               provider: 'bakertilly',
-              group: '视觉模型(能识别图片中的文字)',
+              group: '文本旗舰模型(目前效果最好的模型)',
+              owned_by: 'system',
+            },
+            {
+              id: 'qwen-vl-plus',
+              name: 'qwen-vl-plus(支持根据图片内容对话)',
+              provider: 'bakertilly',
+              group: '视觉模型(支持识别图片中的文字等内容)',
               owned_by: 'system',
             },
             {
@@ -139,6 +150,22 @@ export default function getConfigs(accessToken: string) {
               group: 'DeepSeek',
               owned_by: 'system',
             },
+            {
+              id: 'deepseek-v3.1',
+              name: 'deepseek-v3.1',
+              provider: 'bakertilly',
+              group: 'DeepSeek',
+              owned_by: 'system',
+              capabilities: [
+                {
+                  type: 'function_calling',
+                },
+                {
+                  type: 'reasoning',
+                  isUserSelected: true,
+                },
+              ],
+            },
           ],
           isSystem: true,
           enabled: true,
@@ -158,7 +185,7 @@ export default function getConfigs(accessToken: string) {
         {
           id: 'kjsy',
           name: '会计视界',
-          url: 'https://ai.tzcpa.com/chat/KP01HuCKaPEqtz4V',
+          url: 'https://ai.tzcpa.com/chat/hombXRzggzqZM4l8',
           logo: 'https://open.tzcpa.com/com.tzcpa.cloud/static/icons/kjwd.png',
           type: 'Default',
         },
@@ -188,26 +215,7 @@ export default function getConfigs(accessToken: string) {
       pinned: [],
     },
     mcp: {
-      servers: [
-        {
-          id: 'QUIIQPzL1chQUZc8k50_1',
-          name: '@cherry/fetch',
-          type: 'inMemory',
-          isActive: true,
-          provider: 'BakerTilly',
-        },
-        {
-          id: 'DssHg6RJB7jDI77kAKRYu',
-          name: '@cherry/filesystem',
-          type: 'inMemory',
-          args: ['/Users/username/Desktop', '/path/to/other/allowed/dir'],
-          shouldConfig: true,
-          isActive: false,
-          provider: 'BakerTilly',
-        },
-      ],
-      // isUvInstalled: true,
-      // isBunInstalled: true,
+      servers: [],
     },
   };
   return config;

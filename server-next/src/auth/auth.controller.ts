@@ -19,6 +19,8 @@ import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { RefreshAccessTokenDto } from './dto/refresh-access-token-dto';
 
+import { nanoid } from 'nanoid';
+
 @Controller('auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
@@ -64,10 +66,14 @@ export class AuthController {
     return {
       access_token: this.jwtService.sign({
         id: user.id,
+        // 认证唯一标识
+        jti: nanoid(10),
       }),
       refresh_token: this.jwtService.sign(
         {
           id: user.id,
+          // 认证唯一标识
+          jti: nanoid(10),
         },
         {
           secret: this.configService.get<string>(
@@ -156,6 +162,8 @@ export class AuthController {
           access_token: this.jwtService.sign(
             {
               id: user.id,
+              // 认证唯一标识
+              jti: nanoid(10),
             },
             {
               expiresIn: this.configService.get<string>(
@@ -166,6 +174,8 @@ export class AuthController {
           refresh_token: this.jwtService.sign(
             {
               id: user.id,
+              // 认证唯一标识
+              jti: nanoid(10),
             },
             {
               secret: this.configService.get<string>(
@@ -264,6 +274,8 @@ export class AuthController {
       return {
         access_token: this.jwtService.sign({
           id: user.id,
+          // 认证唯一标识
+          jti: nanoid(10),
         }),
       };
     } catch (exception) {
