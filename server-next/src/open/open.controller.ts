@@ -83,10 +83,8 @@ export class OpenController {
         throw new HttpException('未指定PAI平台模型名称', HttpStatus.NOT_FOUND);
       }
       console.log('modelName', modelName);
-      api = await this.apisService.findOne(
-        {
-          symbol: `pai-${modelName?.toLocaleLowerCase()}`,
-        },
+      api = await this.apisService.findOneBySymbolCaseInsensitive(
+        `pai-${modelName}`,
         {
           select: [
             'id',
@@ -101,22 +99,13 @@ export class OpenController {
       if (!api) {
         throw new HttpException('PAI平台不存在该模型', HttpStatus.NOT_FOUND);
       }
+      // 去除pai-前缀
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (clientRequest.body as any).model = api.symbol.slice(4);
     } else {
-      api = await this.apisService.findOne(
-        {
-          symbol: userSymbol,
-        },
-        {
-          select: [
-            'id',
-            'name',
-            'symbol',
-            'base_url',
-            'access_token',
-            'status',
-          ],
-        },
-      );
+      api = await this.apisService.findOneBySymbolCaseInsensitive(userSymbol, {
+        select: ['id', 'name', 'symbol', 'base_url', 'access_token', 'status'],
+      });
       if (!api) {
         throw new HttpException('接口不存在', HttpStatus.NOT_FOUND);
       }
@@ -138,7 +127,7 @@ export class OpenController {
 
     let ApiHandlerClassName = `./handlers/${api.symbol}`;
 
-    if (api.symbol.startsWith('pai-')) {
+    if (api.symbol.toLowerCase().startsWith('pai-')) {
       ApiHandlerClassName = `./handlers/bailian`;
     }
 

@@ -41,6 +41,23 @@ export class ApisService {
     });
   }
 
+  findOneBySymbolCaseInsensitive(
+    symbol: string,
+    findOneOptions?: FindOneOptions<Api>,
+  ) {
+    const queryBuilder = this.apiRepository.createQueryBuilder('api');
+
+    if (findOneOptions?.select) {
+      queryBuilder.select(
+        (findOneOptions.select as string[]).map((field) => `api.${field}`),
+      );
+    }
+
+    return queryBuilder
+      .where('LOWER(api.symbol) = LOWER(:symbol)', { symbol })
+      .getOne();
+  }
+
   update(
     criteriaOrWhereOptions: CriteriaOrWhereOptions<Api>,
     partialEntity: UpdateApiDto,
