@@ -1,9 +1,9 @@
 export default function getConfigs(accessToken: string) {
   const config = {
-    configId: 'b82f0666',
+    configId: 'b82f0665',
     update: {
-      latestVersion: '1.5.6',
-      lowestVersion: '1.5.6',
+      latestVersion: '1.6.3',
+      lowestVersion: '1.5.1',
       storeUrl: 'http://appstore.tzcpa.com/appDetail?appId=67',
     },
     llm: {
@@ -15,7 +15,7 @@ export default function getConfigs(accessToken: string) {
         group: 'qwen-max',
         owned_by: 'system',
       },
-      topicNamingModel: {
+      quickModel: {
         id: 'qwen-turbo-latest',
         name: 'qwen-turbo-latest',
         provider: 'bakertilly',
@@ -27,6 +27,13 @@ export default function getConfigs(accessToken: string) {
         name: 'qwen-max-latest',
         provider: 'bakertilly',
         group: 'qwen-max',
+        owned_by: 'system',
+      },
+      topicNamingModel: {
+        id: 'qwen-turbo-latest',
+        name: 'qwen-turbo-latest',
+        provider: 'bakertilly',
+        group: 'qwen-turbo',
         owned_by: 'system',
       },
       quickAssistantModel: {
@@ -61,21 +68,28 @@ export default function getConfigs(accessToken: string) {
             },
             {
               id: 'qwen-max-latest',
-              name: 'qwen-max-latest(旗舰文本但不会推理)',
+              name: 'qwen-max-latest(第二代旗舰模型但不会推理)',
               provider: 'bakertilly',
               group: '文本旗舰模型(目前效果最好的模型)',
               owned_by: 'system',
             },
             {
-              id: 'qwen3-max-preview',
-              name: 'qwen3-max-preview(下一代旗舰模型预览版)',
+              id: 'qwen3-max',
+              name: 'qwen3-max(第三代旗舰模型)',
               provider: 'bakertilly',
               group: '文本旗舰模型(目前效果最好的模型)',
               owned_by: 'system',
             },
             {
-              id: 'qwen-vl-plus',
-              name: 'qwen-vl-plus(支持根据图片内容对话)',
+              id: 'qwen-long',
+              name: 'qwen-long(长文档阅读模型支持图片PDF)',
+              provider: 'bakertilly',
+              group: '长文本阅读模型(支持超长文本和多格式文档)',
+              owned_by: 'system',
+            },
+            {
+              id: 'qwen3-vl-plus',
+              name: 'qwen3-vl-plus(支持根据图片内容对话)',
               provider: 'bakertilly',
               group: '视觉模型(支持识别图片中的文字等内容)',
               owned_by: 'system',
@@ -178,28 +192,28 @@ export default function getConfigs(accessToken: string) {
         {
           id: 'tzws',
           name: '天职问税',
-          url: 'https://ai.tzcpa.com/chat/KfnSQiL3mJvyinVY',
+          url: 'https://zh.tzcpa.com/chat/UXwjAmcqsQf6WNlR',
           logo: 'https://open.tzcpa.com/com.tzcpa.cloud/static/icons/tzsw.png',
           type: 'Default',
         },
         {
           id: 'kjsy',
           name: '会计视界',
-          url: 'https://ai.tzcpa.com/chat/hombXRzggzqZM4l8',
+          url: 'https://zh.tzcpa.com/chat/cE9uUw8Vdwv0z2VX',
           logo: 'https://open.tzcpa.com/com.tzcpa.cloud/static/icons/kjwd.png',
           type: 'Default',
         },
         {
           id: 'yqzt',
           name: '舆情智探',
-          url: 'https://ai.tzcpa.com/chat/agJ0fsCSRy1iVdmn',
+          url: 'https://zh.tzcpa.com/chat/C4rwqOdAp928Mcxh',
           logo: 'https://open.tzcpa.com/com.tzcpa.cloud/static/icons/yqjk.png',
           type: 'Default',
         },
         {
           id: 'tzcs',
           name: '天职财思',
-          url: 'https://ai.tzcpa.com/chat/d4OnWG66X4Fegakj',
+          url: 'https://zh.tzcpa.com/chat/fhMtFCemWVluurc8',
           logo: 'https://open.tzcpa.com/com.tzcpa.cloud/static/icons/bbfx.png',
           type: 'Default',
         },
@@ -210,12 +224,59 @@ export default function getConfigs(accessToken: string) {
           logo: '/src/assets/images/logo.png',
           type: 'Default',
         },
+        {
+          id: 'hyzy',
+          name: '行业智研',
+          url: 'http://10.16.8.65:32717/reports/2025/0630/index_20250630.html',
+          logo: 'https://open.tzcpa.com/com.tzcpa.cloud/static/icons/hyzy.png',
+          type: 'Default',
+        },
+        {
+          id: 'nkzsfxkz',
+          name: '内控矩阵检查',
+          url: 'https://zh.tzcpa.com/chat/8YSRxHzJDLswddX4',
+          logo: 'https://open.tzcpa.com/com.tzcpa.cloud/static/icons/nkzs.png',
+          type: 'Default',
+        },
+        {
+          id: 'nkzsdgdj',
+          name: '内控底稿搭建',
+          url: 'https://zh.tzcpa.com/chat/zmumlOlAUpJ08nvO',
+          logo: 'https://open.tzcpa.com/com.tzcpa.cloud/static/icons/nkzs.png',
+          type: 'Default',
+        },
       ],
       disabled: [],
       pinned: [],
     },
     mcp: {
-      servers: [],
+      servers: [
+        {
+          name: 'AntV画图助手',
+          type: 'sse',
+          description:
+            '基于AntV图表封装的MCP插件，支持通过MCP工具创建思维导图、流程图等15+常用可视化图表。',
+          isActive: true,
+          provider: 'BakerTilly',
+          tags: [],
+          baseUrl:
+            'https://api.tzcpa.com/open/amcp/antv-visualization-chart/sse',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      ],
+    },
+    idp: {
+      providers: [
+        {
+          id: 'mineru',
+          name: '天职IDP',
+          apiKey: 'AAAAA',
+          apiHost: 'http://8.130.181.29:8000',
+        },
+      ],
+      defaultProvider: 'mineru',
     },
   };
   return config;
