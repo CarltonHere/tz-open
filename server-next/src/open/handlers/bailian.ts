@@ -28,7 +28,7 @@ export class ApiHandler {
     this.url = url;
     this.api = api;
   }
-  request() {
+  async request(): Promise<void> {
     // 移除原有header
     delete this.clientRequest.headers.host;
     delete this.clientRequest.headers['content-length'];
@@ -50,10 +50,6 @@ export class ApiHandler {
       this.clientRequest.headers['authorization'] = this.api.access_token;
     }
 
-    console.log('Forwarding request to:', this.url);
-    console.log('Request method:', this.clientRequest.method);
-    console.log('Request headers:', this.clientRequest.headers);
-
     // 检查是否是 multipart 请求
     const contentType = this.clientRequest.headers['content-type'] || '';
     const isMultipart = contentType
@@ -66,16 +62,9 @@ export class ApiHandler {
       : this.clientRequest.body;
 
     // 直接转发原始请求
-    this.httpService.axiosRef
+    return this.httpService.axiosRef
       .request({
-        method: this.clientRequest.method as
-          | 'GET'
-          | 'POST'
-          | 'PUT'
-          | 'DELETE'
-          | 'PATCH'
-          | 'HEAD'
-          | 'OPTIONS',
+        method: this.clientRequest.method,
         url: this.url,
         data: requestData,
         headers: this.clientRequest.headers,
@@ -98,15 +87,14 @@ export class ApiHandler {
             }
           }
 
-          // 转发流数据
+          // 直接使用 pipe 转发流数据,提高 SSE 效率
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-          response.data.on('data', (chunk) => {
-            this.clientResponse.raw.write(chunk);
-          });
+          response.data.pipe(this.clientResponse.raw);
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
           response.data.on('end', () => {
             console.log('Response stream ended');
+            this.clientResponse.raw.end();
             resolve();
           });
 
@@ -139,10 +127,6 @@ export class ApiHandler {
             ) +
             '\n\n',
         );
-      })
-      .finally(() => {
-        console.log('finally');
-        this.clientResponse.raw.end();
       });
   }
 }

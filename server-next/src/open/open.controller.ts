@@ -64,7 +64,7 @@ export class OpenController {
     @Req() clientRequest: FastifyRequest & { _parsedUrl: { pathname: string } },
     @Res() clientResponse: FastifyReply, // 获取 Express 的响应对象
     // @GetUser() user: UserType,
-  ) {
+  ): Promise<void> {
     console.log(clientRequest.params);
     const userSymbol = (
       clientRequest.params as {
@@ -131,34 +131,25 @@ export class OpenController {
       ApiHandlerClassName = `./handlers/bailian`;
     }
 
-    import(ApiHandlerClassName)
-      .then(({ ApiHandler }: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-        const apiHandler = new ApiHandler({
-          httpService: this.httpService,
-          clientRequest,
-          clientResponse,
-          url,
-          api,
-        });
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-        apiHandler.request();
-      })
-      .catch(() => {
-        import(`./handlers/common`)
-          .then(({ ApiHandler }: any) => {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-            const apiHandler = new ApiHandler({
-              httpService: this.httpService,
-              clientRequest,
-              clientResponse,
-              url,
-              api,
-            });
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-            apiHandler.request();
-          })
-          .catch(() => {});
+    // 使用 await 等待请求完成，确保不会阻塞其他请求
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const { ApiHandler } = await import(ApiHandlerClassName).catch(
+        () => import(`./handlers/common`),
+      );
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+      const apiHandler = new ApiHandler({
+        httpService: this.httpService,
+        clientRequest,
+        clientResponse,
+        url,
+        api,
       });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await apiHandler.request();
+    } catch (error) {
+      console.error('Handler execution failed:', error);
+      throw error;
+    }
   }
 }

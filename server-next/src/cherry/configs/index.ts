@@ -252,6 +252,7 @@ export default function getConfigs(accessToken: string) {
     mcp: {
       servers: [
         {
+          id: 'yD1wmsuc_HQ0AqH6MqWJ1',
           name: 'AntV画图助手',
           type: 'sse',
           description:

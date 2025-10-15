@@ -28,7 +28,7 @@ export class ApiHandler {
     this.url = url;
     this.api = api;
   }
-  request() {
+  async request(): Promise<void> {
     // 移除原有header
     delete this.clientRequest.headers.host;
     delete this.clientRequest.headers['content-length'];
@@ -50,7 +50,7 @@ export class ApiHandler {
       ...this.generateBidataHeader(),
     };
 
-    this.httpService.axiosRef
+    return this.httpService.axiosRef
       .request({
         method: this.clientRequest.method,
         url: this.url,
@@ -79,15 +79,14 @@ export class ApiHandler {
             }
           }
 
-          // 转发流数据
+          // 直接使用 pipe 转发流数据,提高 SSE 效率
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-          response.data.on('data', (chunk) => {
-            this.clientResponse.raw.write(chunk);
-          });
+          response.data.pipe(this.clientResponse.raw);
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
           response.data.on('end', () => {
             console.log('Response stream ended');
+            this.clientResponse.raw.end();
             resolve();
           });
 
@@ -105,7 +104,7 @@ export class ApiHandler {
         });
       })
       .catch((exception: Error) => {
-        console.error('Error occurred11:', exception.message);
+        console.error('Error occurred:', exception.message);
         this.clientResponse.raw.write(
           JSON.stringify(
             new CommonApiResponse({
@@ -118,9 +117,6 @@ export class ApiHandler {
             }),
           ),
         );
-      })
-      .finally(() => {
-        console.log('finally');
         this.clientResponse.raw.end();
       });
   }
