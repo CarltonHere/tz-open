@@ -50,14 +50,27 @@ export class ApiHandler {
       this.clientRequest.headers['authorization'] = this.api.access_token;
     }
 
+    // 检查是否是 multipart 请求
+    const contentType = this.clientRequest.headers['content-type'] || '';
+    const isMultipart = contentType
+      .toLowerCase()
+      .includes('multipart/form-data');
+
+    // 对于 multipart 请求,使用原始流;否则使用解析后的 body
+    const requestData = isMultipart
+      ? this.clientRequest.raw
+      : this.clientRequest.body;
+
     this.httpService.axiosRef
       .request({
         method: this.clientRequest.method,
         url: this.url,
-        data: this.clientRequest.body,
+        data: requestData,
         headers: this.clientRequest.headers,
         responseType: 'stream',
         validateStatus: () => true,
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
       })
       .then(async (response) => {
         return await new Promise<void>((resolve, reject) => {

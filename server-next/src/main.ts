@@ -18,6 +18,7 @@ async function bootstrap() {
       ignoreTrailingSlash: true,
     }),
   );
+
   app.useGlobalFilters(new PrimaryExceptionFilter());
   const configService = app.get(ConfigService);
   SwaggerService.createDocument(app);
@@ -31,4 +32,4 @@ async function bootstrap() {
       logger.log('Opened server on', server.address());
     });
 }
-bootstrap();
+void bootstrap();
