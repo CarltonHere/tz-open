@@ -21,6 +21,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new PrimaryExceptionFilter());
   const configService = app.get(ConfigService);
+
   SwaggerService.createDocument(app);
   app.enableCors();
   await app
