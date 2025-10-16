@@ -100,6 +100,8 @@ export class AuthController {
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         data: {
           client_id: '3f3f58fd-0aa2-4fdb-868b-745bdaeb537a',
+          client_secret: '_jZ6abJjV6KBSmtVI2sWpycsj8ZIDqv2GziKu_z6',
+          scope: 'profile email openid',
           grant_type: 'password',
           username,
           password,
@@ -113,13 +115,14 @@ export class AuthController {
         ) as {
           unique_name: string;
           upn: string;
+          email: string;
         };
         this.logger.log({ ...user_info, ip });
         // 判断是否已经注册过，如果没有注册则注册
         let user = await this.usersService.findOne({
           username,
         });
-        if (!user) {
+        if (!user?.id) {
           // 获取角色
           const role = await this.rolesService.findOne({
             name: '普通用户',
@@ -131,34 +134,22 @@ export class AuthController {
             );
           }
           const _user = new User();
-          _user.username = username;
+          _user.username = username.toUpperCase();
           _user.password = password;
-          _user.email = user_info['upn'];
+          _user.email = user_info['email'];
           _user.name = user_info['unique_name'];
           _user.role = role;
           user = await this.usersService.create(_user);
-          // this.authService.createAuthLog({
-          //   type: 'register',
-          //   method: 'sso',
-          //   ip,
-          //   username,
-          //   password,
-          //   user,
-          // });
         } else {
-          // this.authService.createAuthLog({
-          //   type: 'login',
-          //   method: 'sso',
-          //   ip,
-          //   username,
-          //   password,
-          //   user,
-          // });
+          // 更新user所有信息
+          user.username = username.toUpperCase();
+          user.password = password;
+          user.email = user_info['email'];
+          user.name = user_info['unique_name'];
+          await this.usersService.update(user.id, user);
         }
         return {
           username,
-          // email: user_info['upn'],
-          // nickname: user_info['unique_name'],
           access_token: this.jwtService.sign(
             {
               id: user.id,
@@ -188,14 +179,6 @@ export class AuthController {
           ),
         };
       } else {
-        // this.authService.createAuthLog({
-        //   type: 'login',
-        //   method: 'sso',
-        //   ip,
-        //   username,
-        //   password,
-        //   status: '4',
-        // });
         throw new HttpException(
           'SSO认证服务器发生错误',
           HttpStatus.INTERNAL_SERVER_ERROR,
@@ -207,25 +190,9 @@ export class AuthController {
         exception.stack,
       );
       if (!exception.response?.status) {
-        // this.authService.createAuthLog({
-        //   type: 'login',
-        //   method: 'sso',
-        //   ip,
-        //   username,
-        //   password,
-        //   status: '4',
-        // });
         throw exception;
       }
       if (exception.response?.status === 400) {
-        // this.authService.createAuthLog({
-        //   type: 'login',
-        //   method: 'sso',
-        //   ip,
-        //   username,
-        //   password,
-        //   status: '3',
-        // });
         throw new HttpException(
           'SSO服务用户名或密码错误',
           HttpStatus.UNAUTHORIZED,
@@ -233,14 +200,6 @@ export class AuthController {
       }
 
       if (exception.response?.data?.error_description) {
-        // this.authService.createAuthLog({
-        //   type: 'login',
-        //   method: 'sso',
-        //   ip,
-        //   username,
-        //   password,
-        //   status: '4',
-        // });
         throw new HttpException(
           exception.response?.data?.error_description as string,
           exception?.response?.status as number,
