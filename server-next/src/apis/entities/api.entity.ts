@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { Allow, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import {
+  Allow,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { EnhancedBaseEntity } from 'src/commons/entities/base.entity';
 import { Column, Entity } from 'typeorm';
 
@@ -55,6 +61,7 @@ export class Api extends EnhancedBaseEntity {
     description: '接口令牌',
     example: '接口令牌',
   })
+  @IsOptional()
   @IsString({ message: '接口令牌格式错误' })
   @Column({
     type: 'varchar',

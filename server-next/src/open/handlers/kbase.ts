@@ -1,11 +1,27 @@
 import { HttpService } from '@nestjs/axios';
+import { HttpException } from '@nestjs/common';
 import { FastifyReply, FastifyRequest } from 'fastify';
+import { rsaEncrypt } from 'src/commons/crypto.utils';
 import { CommonApiResponse, ErrorShowType } from 'src/commons/dto/api.response';
+import { User } from 'src/users/entities/user.entity';
 import { Api } from '../../apis/entities/api.entity';
+
+const publicKey = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk+/EOpc/IUFZciKyfOGg
+sYp3l1uvbLCxqf5Yi3Q5YjEjZScZrph36DZ7gsq6/ElbhDX03BEcuyaxraDWaljm
+XQUExddM6TL71WYegNGsQDoktDctkJ70flMzwvHLvogH93vpt/FwEASImcx23ldS
+uZqxD6gFdn+QY6nWjlcm1d5374PPrTnvSDAkeB16IAxvsExFcq24kQ8355d3ECM/
+89rPXc3eOhMj54ICwqjyVhhKIEf/oJUXhyUWKyK3jAkcF7/VPewepeATsEBQfAyS
+kEcFv5Y+AQMOZkEHDSGozjLYJYi2zT1Fcbwf5phqtHoPLhjK+MW7kK/4p37CQMvU
+8wIDAQAB
+-----END PUBLIC KEY-----`;
 
 export class ApiHandler {
   private readonly httpService: HttpService;
-  private readonly clientRequest: FastifyRequest;
+  private readonly clientRequest: FastifyRequest & {
+    _parsedUrl: { pathname: string };
+    user: User;
+  };
   private readonly clientResponse: FastifyReply;
   private readonly url: string;
   private readonly api: Api;
@@ -17,7 +33,10 @@ export class ApiHandler {
     url,
   }: {
     httpService: HttpService;
-    clientRequest: FastifyRequest;
+    clientRequest: FastifyRequest & {
+      _parsedUrl: { pathname: string };
+      user: User;
+    };
     clientResponse: FastifyReply;
     url: string;
     api: Api;
@@ -49,6 +68,16 @@ export class ApiHandler {
     if (this.api.access_token) {
       this.clientRequest.headers['authorization'] = this.api.access_token;
     }
+
+    // 注入用户id
+    if (!this.clientRequest?.user?.username) {
+      throw new HttpException('获取用户元信息异常', 403);
+    }
+
+    this.clientRequest.headers['user_id'] = rsaEncrypt(
+      publicKey,
+      this.clientRequest.user.username,
+    );
 
     // 检查是否是 multipart 请求
     const contentType = this.clientRequest.headers['content-type'] || '';

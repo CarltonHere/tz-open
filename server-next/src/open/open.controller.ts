@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { FastifyReply, FastifyRequest } from 'fastify';
+import { User } from 'src/users/entities/user.entity';
 import { CreateOpenDto } from './dto/create-open.dto';
 import { UpdateOpenDto } from './dto/update-open.dto';
 import { OpenService } from './open.service';
@@ -49,7 +50,11 @@ export class OpenController {
   @All(':apiName/*')
   @ApiParam({ name: 'apiName', example: 'tyc' })
   async proxy(
-    @Req() clientRequest: FastifyRequest & { _parsedUrl: { pathname: string } },
+    @Req()
+    clientRequest: FastifyRequest & {
+      _parsedUrl: { pathname: string };
+      user: User;
+    },
     @Res() clientResponse: FastifyReply,
   ): Promise<void> {
     const userSymbol = (
@@ -57,6 +62,7 @@ export class OpenController {
         apiName: string;
       }
     ).apiName;
+
     await this.openService.proxyRequest(
       clientRequest,
       clientResponse,

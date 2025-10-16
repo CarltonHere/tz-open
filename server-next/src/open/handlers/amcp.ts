@@ -87,14 +87,12 @@ export class ApiHandler {
             }
           }
 
-          // 直接使用 pipe 转发流数据,提高 SSE 效率
+          // 转发流数据
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
           response.data.pipe(this.clientResponse.raw);
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
           response.data.on('end', () => {
-            console.log('Response stream ended');
-            this.clientResponse.raw.end();
             resolve();
           });
 
@@ -113,20 +111,25 @@ export class ApiHandler {
       })
       .catch((exception: Error) => {
         console.error('Error occurred:', exception.message);
-        this.clientResponse.raw.end(
-          'data: ' +
+        if (!this.clientResponse.raw.writableEnded) {
+          this.clientResponse.raw.write(
             JSON.stringify(
               new CommonApiResponse({
                 data: [],
                 path: this.clientRequest.url,
                 success: false,
-                errorCode: this.clientResponse.raw.statusCode,
-                errorMessage: '请求失败',
+                errorCode: this.clientResponse.raw.statusCode || 500,
+                errorMessage: exception.message || '请求失败',
                 showType: ErrorShowType.ERROR_MESSAGE,
               }),
-            ) +
-            '\n\n',
-        );
+            ),
+          );
+        }
+      })
+      .finally(() => {
+        if (!this.clientResponse.raw.writableEnded) {
+          this.clientResponse.raw.end();
+        }
       });
   }
 }

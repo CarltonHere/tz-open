@@ -3,6 +3,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { ApisService } from 'src/apis/apis.service';
 import { Api } from 'src/apis/entities/api.entity';
+import { User } from 'src/users/entities/user.entity';
 import { CreateOpenDto } from './dto/create-open.dto';
 import { UpdateOpenDto } from './dto/update-open.dto';
 
@@ -43,14 +44,14 @@ export class OpenService {
    * @param routePrefix 路由前缀 (如 'open', 'origin', 'mcps')
    */
   async proxyRequest(
-    clientRequest: FastifyRequest & { _parsedUrl: { pathname: string } },
+    clientRequest: FastifyRequest & {
+      _parsedUrl: { pathname: string };
+      user: User;
+    },
     clientResponse: FastifyReply,
     apiSymbol: string,
     userSymbol?: string,
   ): Promise<void> {
-    console.log('Proxy request params:', clientRequest.params);
-    console.log('User symbol:', apiSymbol);
-
     let api: Api | null;
 
     // pai平台集中路由转发处理逻辑
@@ -111,25 +112,21 @@ export class OpenService {
       ApiHandlerClassName = `./handlers/bailian`;
     }
 
-    // 使用 await 等待请求完成，确保不会阻塞其他请求
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const { ApiHandler } = await import(ApiHandlerClassName).catch(
-        () => import(`./handlers/common`),
-      );
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-      const apiHandler = new ApiHandler({
-        httpService: this.httpService,
-        clientRequest,
-        clientResponse,
-        url,
-        api,
-      });
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      await apiHandler.request();
-    } catch (error) {
-      console.error('Handler execution failed:', error);
-      throw error;
-    }
+    // 使用 await 等待请求完成,确保不会阻塞其他请求
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const { ApiHandler } = await import(ApiHandlerClassName).catch(
+      () => import(`./handlers/common`),
+    );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    const apiHandler = new ApiHandler({
+      httpService: this.httpService,
+      clientRequest,
+      clientResponse,
+      url,
+      api,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    await apiHandler.request();
   }
 }

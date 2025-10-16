@@ -1,6 +1,7 @@
 import { All, Controller, Req, Res } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { FastifyReply, FastifyRequest } from 'fastify';
+import { User } from 'src/users/entities/user.entity';
 import { OpenService } from './open.service';
 
 /**
@@ -14,7 +15,11 @@ export class McpsController {
 
   @All('*')
   async proxy(
-    @Req() clientRequest: FastifyRequest & { _parsedUrl: { pathname: string } },
+    @Req()
+    clientRequest: FastifyRequest & {
+      _parsedUrl: { pathname: string };
+      user: User;
+    },
     @Res() clientResponse: FastifyReply,
   ): Promise<void> {
     // 将所有 /mcps 请求映射到 amcp

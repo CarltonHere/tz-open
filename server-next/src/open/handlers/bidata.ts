@@ -66,7 +66,7 @@ export class ApiHandler {
           this.clientResponse.raw.statusCode = response.status;
           // 设置响应头
           for (const [key, value] of Object.entries(response.headers)) {
-            // 仅允许白名单header设置
+            // 仅允许以下白名单header设置
             if (
               !['content-type', 'set-cookie'].includes(key.toLocaleLowerCase())
             ) {
@@ -85,8 +85,6 @@ export class ApiHandler {
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
           response.data.on('end', () => {
-            console.log('Response stream ended');
-            this.clientResponse.raw.end();
             resolve();
           });
 
@@ -105,19 +103,25 @@ export class ApiHandler {
       })
       .catch((exception: Error) => {
         console.error('Error occurred:', exception.message);
-        this.clientResponse.raw.write(
-          JSON.stringify(
-            new CommonApiResponse({
-              data: [],
-              path: this.clientRequest.url,
-              success: false,
-              errorCode: this.clientResponse.raw.statusCode,
-              errorMessage: '请求失败',
-              showType: ErrorShowType.ERROR_MESSAGE,
-            }),
-          ),
-        );
-        this.clientResponse.raw.end();
+        if (!this.clientResponse.raw.writableEnded) {
+          this.clientResponse.raw.write(
+            JSON.stringify(
+              new CommonApiResponse({
+                data: [],
+                path: this.clientRequest.url,
+                success: false,
+                errorCode: this.clientResponse.raw.statusCode || 500,
+                errorMessage: exception.message || '请求失败',
+                showType: ErrorShowType.ERROR_MESSAGE,
+              }),
+            ),
+          );
+        }
+      })
+      .finally(() => {
+        if (!this.clientResponse.raw.writableEnded) {
+          this.clientResponse.raw.end();
+        }
       });
   }
 
@@ -133,7 +137,7 @@ export class ApiHandler {
     const data = `${xNonce};${securityKey};${xTimestamp};${xUid};`;
     // 计算 SHA1 签名
     const sha1Signature = crypto.createHash('sha1').update(data).digest('hex');
-    console.log('SHA1 签名:', sha1Signature);
+    // console.log('SHA1 签名:', sha1Signature);
     return {
       'X-Nonce': xNonce,
       'X-Timestamp': xTimestamp,

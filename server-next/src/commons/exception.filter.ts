@@ -40,15 +40,26 @@ export class PrimaryExceptionFilter implements ExceptionFilter {
           : 'Internal Server Error';
     }
 
-    return response.status(errorCode).send(
-      new CommonApiResponse({
-        data: [],
-        path: request.url,
-        success: false,
-        errorCode,
-        errorMessage,
-        showType: showType ?? ErrorShowType.ERROR_MESSAGE,
-      }),
-    );
+    const errorResponse = new CommonApiResponse({
+      data: [],
+      path: request.url,
+      success: false,
+      errorCode,
+      errorMessage,
+      showType: showType ?? ErrorShowType.ERROR_MESSAGE,
+    });
+
+    // 检查响应是否已经被 hijack (代理请求的情况)
+    if (response.raw && !response.raw.writableEnded) {
+      // 处理被 hijack 的响应
+      response.raw.statusCode = errorCode;
+      response.raw.setHeader('Content-Type', 'application/json');
+      response.raw.write(JSON.stringify(errorResponse));
+      response.raw.end();
+    } else if (!response.sent && !response.raw?.writableEnded) {
+      // 处理普通响应
+      return response.status(errorCode).send(errorResponse);
+    }
+    // 如果响应已经结束,不做任何操作
   }
 }
