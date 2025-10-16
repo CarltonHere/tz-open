@@ -76,7 +76,7 @@ export class ApiHandler {
 
     this.clientRequest.headers['user_id'] = rsaEncrypt(
       publicKey,
-      this.clientRequest.user.username,
+      this.clientRequest.user.username.toUpperCase(),
     );
 
     // 检查是否是 multipart 请求
