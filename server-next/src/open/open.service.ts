@@ -76,18 +76,32 @@ export class OpenService {
           ],
         },
       );
+      if (api) {
+        // 去除pai-前缀
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        (clientRequest.body as any).model = api.symbol.slice(4);
+      } else {
+        api = await this.apisService.findOneBySymbolCaseInsensitive(`pai`, {
+          select: [
+            'id',
+            'name',
+            'symbol',
+            'base_url',
+            'access_token',
+            'status',
+          ],
+        });
+      }
+
       if (!api) {
         throw new HttpException('PAI平台不存在该模型', HttpStatus.NOT_FOUND);
       }
-      // 去除pai-前缀
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      (clientRequest.body as any).model = api.symbol.slice(4);
     } else {
       api = await this.apisService.findOneBySymbolCaseInsensitive(apiSymbol, {
         select: ['id', 'name', 'symbol', 'base_url', 'access_token', 'status'],
       });
       if (!api) {
-        throw new HttpException('接口不存在', HttpStatus.NOT_FOUND);
+        throw new HttpException('该接口不存在', HttpStatus.NOT_FOUND);
       }
     }
 
@@ -108,7 +122,10 @@ export class OpenService {
 
     let ApiHandlerClassName = `./handlers/${api.symbol}`;
 
-    if (api.symbol.toLowerCase().startsWith('pai-')) {
+    if (
+      api.symbol.toLowerCase().startsWith('pai-') ||
+      api.symbol.toLowerCase() === 'pai'
+    ) {
       ApiHandlerClassName = `./handlers/bailian`;
     }
 

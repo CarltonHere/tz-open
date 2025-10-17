@@ -55,6 +55,7 @@ export class ApisService {
 
     return queryBuilder
       .where('LOWER(api.symbol) = LOWER(:symbol)', { symbol })
+      .andWhere('api.delete_time IS NULL')
       .getOne();
   }
 
